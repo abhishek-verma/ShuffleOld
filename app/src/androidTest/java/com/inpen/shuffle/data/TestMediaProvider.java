@@ -64,12 +64,13 @@ public class TestMediaProvider {
             cv.put(MediaEntry.COLUMN_SONG_ID, "testSongId" + i);
             cv.put(MediaEntry.COLUMN_TITLE, "testTitle" + i);
             cv.put(MediaEntry.COLUMN_ALBUM, "testAlbum" + i);
+            cv.put(MediaEntry.COLUMN_ALBUM_ID, 100 + i);
             cv.put(MediaEntry.COLUMN_ARTIST, "testArtist" + i);
+            cv.put(MediaEntry.COLUMN_ARTIST_ID, 100 + i);
             cv.put(MediaEntry.COLUMN_FOLDER, "testFolderName" + i);
             cv.put(MediaEntry.COLUMN_ALBUM_ART, "testArtUrl/subpath" + i);
             cv.put(MediaEntry.COLUMN_DURATION, "98293" + i);
             cv.put(MediaEntry.COLUMN_PATH, "testPath/subpath" + i);
-            cv.put(MediaEntry.COLUMN_IS_SYNCED, "0" + i);
 
             cvVector.add(cv);
         }
@@ -113,15 +114,19 @@ public class TestMediaProvider {
 
         final int COLUMN_INDEX_TITLE = 0;
         final int COLUMN_INDEX_ALBUM = 1;
-        final int COLUMN_INDEX_ARTIST = 2;
-        final int COLUMN_INDEX_ALBUM_ART = 3;
-        final int COLUMN_INDEX_DURATION = 4;
-        final int COLUMN_INDEX_PATH = 5;
+        final int COLUMN_INDEX_ALBUM_ID = 2;
+        final int COLUMN_INDEX_ARTIST = 3;
+        final int COLUMN_INDEX_ARTIST_ID = 4;
+        final int COLUMN_INDEX_ALBUM_ART = 5;
+        final int COLUMN_INDEX_DURATION = 6;
+        final int COLUMN_INDEX_PATH = 7;
 
         final String[] SONGS_QUEUE_CURSOR_COLUMNS = {
                 MediaEntry.TABLE_NAME + "." + MediaEntry.COLUMN_TITLE,
                 MediaEntry.TABLE_NAME + "." + MediaEntry.COLUMN_ALBUM,
+                MediaEntry.TABLE_NAME + "." + MediaEntry.COLUMN_ALBUM_ID,
                 MediaEntry.TABLE_NAME + "." + MediaEntry.COLUMN_ARTIST,
+                MediaEntry.TABLE_NAME + "." + MediaEntry.COLUMN_ARTIST_ID,
                 MediaEntry.TABLE_NAME + "." + MediaEntry.COLUMN_ALBUM_ART,
                 MediaEntry.TABLE_NAME + "." + MediaEntry.COLUMN_DURATION,
                 MediaEntry.TABLE_NAME + "." + MediaEntry.COLUMN_PATH
@@ -144,8 +149,12 @@ public class TestMediaProvider {
                     cursor.getString(COLUMN_INDEX_TITLE).equals("testTitle" + i));
             assertTrue("required: " + i + ", actual: " + cursor.getString(COLUMN_INDEX_ALBUM),
                     cursor.getString(COLUMN_INDEX_ALBUM).equals("testAlbum" + i));
+            assertTrue("required: " + i + ", actual: " + cursor.getInt(COLUMN_INDEX_ALBUM_ID),
+                    cursor.getInt(COLUMN_INDEX_ALBUM_ID) == 100 + i);
             assertTrue("required: " + i + ", actual: " + cursor.getString(COLUMN_INDEX_ARTIST),
                     cursor.getString(COLUMN_INDEX_ARTIST).equals("testArtist" + i));
+            assertTrue("required: " + i + ", actual: " + cursor.getInt(COLUMN_INDEX_ARTIST_ID),
+                    cursor.getInt(COLUMN_INDEX_ARTIST_ID) == 100 + i);
             assertTrue("required: " + i + ", actual: " + cursor.getString(COLUMN_INDEX_DURATION),
                     cursor.getString(COLUMN_INDEX_DURATION).equals("98293" + i));
             assertTrue("required: " + i + ", actual: " + cursor.getString(COLUMN_INDEX_ALBUM_ART),

@@ -25,8 +25,6 @@ public class MediaProvider extends ContentProvider {
             MediaEntry.COLUMN_ALBUM + " ASC";
     public static final String mArtistsSortOrder =
             MediaEntry.COLUMN_ARTIST + " ASC";
-    public static final String mFoldersOrder =
-            MediaEntry.COLUMN_FOLDER + " ASC";
     public static final String mPlaylistsOrder =
             PlaylistsEntry.COLUMN_PLAYLIST_NAME + " ASC";
 

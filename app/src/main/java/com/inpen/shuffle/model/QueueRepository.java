@@ -24,26 +24,25 @@ public class QueueRepository {
     private static final String KEY_PLAYING_QUEUE = "playing_queue";
     private static final String KEY_CURRENT_TRACK_INDEX = "current_track_index";
     public static QueueRepository mQueueRepositoryInstance;
-    private final Context mContext;
+
     // cached playing queue
     public List<Audio> mPlayingQueue;
     public int mCurrentTrackIndex;
     private SharedPreferences mPreferences;
     private volatile State mCurrentState = State.NON_INITIALIZED;
 
-    public QueueRepository(Context context) {
-        this.mContext = context;
-    }
 
-    public static QueueRepository getInstance(Context context) {
+    public static QueueRepository getInstance() {
         if (mQueueRepositoryInstance == null) {
-            mQueueRepositoryInstance = new QueueRepository(context);
+            mQueueRepositoryInstance = new QueueRepository();
         }
 
         return mQueueRepositoryInstance;
     }
 
-    private synchronized void initializeQueue(QueueHelper.MediaSelectorType selector, List<String> selectorItems) {
+    synchronized void initializeQueue(QueueHelper.MediaSelectorType selector,
+                                      List<String> selectorItems,
+                                      Context context) {
         try {
             if (mCurrentState == State.NON_INITIALIZED) {
                 mCurrentState = State.INITIALIZING;
@@ -69,7 +68,7 @@ public class QueueRepository {
 //                    }
 //                }.execute();
 
-                storeQueue();
+                storeQueue(context);
                 mCurrentState = State.INITIALIZED;
             }
         } finally {
@@ -81,12 +80,9 @@ public class QueueRepository {
         }
     }
 
-    public void storeQueue() {
+    public void storeQueue(Context context) {
 
-        if (mPreferences == null)
-            mPreferences = mContext.getSharedPreferences(AUDIO_STORAGE, Context.MODE_PRIVATE);
-
-        SharedPreferences.Editor editor = mPreferences.edit();
+        SharedPreferences.Editor editor = getmPreferences(context).edit();
         Gson gson = new Gson();
         String json = gson.toJson(mPlayingQueue);
         editor.putString(KEY_PLAYING_QUEUE, json);
@@ -95,21 +91,19 @@ public class QueueRepository {
         editor.apply();
     }
 
-    public void loadQueue() {
+    public void loadQueue(Context context) {
         try {
             if (mCurrentState == State.NON_INITIALIZED)
                 mCurrentState = State.INITIALIZING;
 
-            if (mPreferences == null)
-                mPreferences = mContext.getSharedPreferences(AUDIO_STORAGE, Context.MODE_PRIVATE);
             Gson gson = new Gson();
-            String json = mPreferences.getString("audioArrayList", null);
+            String json = getmPreferences(context).getString(KEY_PLAYING_QUEUE, null);
 
             Type type = new TypeToken<ArrayList<Audio>>() {
             }.getType();
 
             mPlayingQueue = gson.fromJson(json, type);
-            mCurrentTrackIndex = mPreferences.getInt(KEY_CURRENT_TRACK_INDEX, -1);
+            mCurrentTrackIndex = getmPreferences(context).getInt(KEY_CURRENT_TRACK_INDEX, -1);
 
             if (mPlayingQueue != null && mPlayingQueue.size() > 0) {
                 mCurrentState = State.INITIALIZED;
@@ -124,17 +118,21 @@ public class QueueRepository {
         }
     }
 
-    public void clearCachedAudioPlaylist() {
+    public void clearCachedAudioPlaylist(Context context) {
 
-        if (mPreferences == null)
-            mPreferences = mContext.getSharedPreferences(AUDIO_STORAGE, Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = mPreferences.edit();
+        mPlayingQueue.clear();
+
+        SharedPreferences.Editor editor = getmPreferences(context).edit();
         editor.clear();
         editor.apply();
     }
 
-    enum State {
-        NON_INITIALIZED, INITIALIZING, INITIALIZED
+    private SharedPreferences getmPreferences(Context context) {
+
+        if (mPreferences == null)
+            mPreferences = context.getSharedPreferences(AUDIO_STORAGE, Context.MODE_PRIVATE);
+
+        return mPreferences;
     }
 
 

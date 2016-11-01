@@ -31,12 +31,13 @@ public class MediaDbHelper extends SQLiteOpenHelper{
                 MediaEntry.COLUMN_SONG_ID + " TEXT UNIQUE NOT NULL, " +
                 MediaEntry.COLUMN_TITLE + " TEXT NOT NULL, " +
                 MediaEntry.COLUMN_PATH + " TEXT UNIQUE NOT NULL, " +
-                MediaEntry.COLUMN_ALBUM + " TEXT NOT NULL, " +
-                MediaEntry.COLUMN_ARTIST + " TEXT NOT NULL, " +
+                MediaEntry.COLUMN_ALBUM + " TEXT, " +
+                MediaEntry.COLUMN_ALBUM_ID + " TEXT NOT NULL, " +
+                MediaEntry.COLUMN_ARTIST + " TEXT, " +
+                MediaEntry.COLUMN_ARTIST_ID + " TEXT NOT NULL, " +
                 MediaEntry.COLUMN_FOLDER + " TEXT NOT NULL, " +
                 MediaEntry.COLUMN_DURATION + " TEXT NOT NULL, " +
-                MediaEntry.COLUMN_ALBUM_ART + " TEXT, " +
-                MediaEntry.COLUMN_IS_SYNCED + " INTEGER NOT NULL" +
+                MediaEntry.COLUMN_ALBUM_ART + " TEXT " +
                 " )";
 
         final String SQL_CREATE_PLAYLISTS_TABLE = "CREATE TABLE " + PlaylistsEntry.TABLE_NAME + " ( " +

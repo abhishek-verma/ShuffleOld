@@ -46,7 +46,7 @@ public class QueueHelperTest {
 
         mContext = getTargetContext();
         SQLiteDatabase db = new MediaDbHelper(mContext).getWritableDatabase();
-
+        db.close();
 
         Vector<ContentValues> cvVector = new Vector<>();
         ContentValues cv;
@@ -57,12 +57,13 @@ public class QueueHelperTest {
             cv.put(MediaContract.MediaEntry.COLUMN_SONG_ID, "testSongId" + i);
             cv.put(MediaContract.MediaEntry.COLUMN_TITLE, "testTitle" + i);
             cv.put(MediaContract.MediaEntry.COLUMN_ALBUM, "testAlbum" + i);
+            cv.put(MediaContract.MediaEntry.COLUMN_ALBUM_ID, 100 + i);
             cv.put(MediaContract.MediaEntry.COLUMN_ARTIST, "testArtist" + i);
+            cv.put(MediaContract.MediaEntry.COLUMN_ARTIST_ID, 100 + i);
             cv.put(MediaContract.MediaEntry.COLUMN_FOLDER, "testFolderName" + i);
             cv.put(MediaContract.MediaEntry.COLUMN_ALBUM_ART, "testArtUrl/subpath" + i);
             cv.put(MediaContract.MediaEntry.COLUMN_DURATION, "98293" + i);
             cv.put(MediaContract.MediaEntry.COLUMN_PATH, "testPath/subpath" + i);
-            cv.put(MediaContract.MediaEntry.COLUMN_IS_SYNCED, "0" + i);
 
             cvVector.add(cv);
         }
@@ -93,8 +94,6 @@ public class QueueHelperTest {
             mContext.getContentResolver().bulkInsert(MediaContract.PlaylistsEntry.CONTENT_URI, cvArray);
         }
 
-        db.close();
-
     }
 
     @Test
@@ -109,15 +108,15 @@ public class QueueHelperTest {
         assertTrue(audioList.size() == 4);
 
         // Retrieving all songs for album
-        audioList = qh.generateQueue(QueueHelper.MediaSelectorType.ALBUM,
-                new String[]{"testAlbum1", "testAlbum2"});
-        Log.i(LOG_TAG, "all songs for album: " + audioList.toString());
-        assertTrue(audioList.size() == 2);
+        audioList = qh.generateQueue(QueueHelper.MediaSelectorType.ALBUM_ID,
+                new String[]{"101", "102"});
+        Log.i(LOG_TAG, "all songs for albumId: " + audioList.toString());
+        assertTrue("Expected Size: 2, Actual size: " + audioList.size(), audioList.size() == 2);
 
         // Retrieving all songs for artist
-        audioList = qh.generateQueue(QueueHelper.MediaSelectorType.ARTIST,
-                new String[]{"testArtist1", "testArtist2"});
-        Log.i(LOG_TAG, "all songs for artist: " + audioList.toString());
+        audioList = qh.generateQueue(QueueHelper.MediaSelectorType.ARTIST_ID,
+                new String[]{"101", "102"});
+        Log.i(LOG_TAG, "all songs for artistId: " + audioList.toString());
         assertTrue(audioList.size() == 2);
 
 //         Retrieving all songs for playlist

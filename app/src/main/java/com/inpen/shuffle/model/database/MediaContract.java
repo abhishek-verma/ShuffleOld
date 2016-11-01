@@ -37,12 +37,13 @@ public class MediaContract {
         public static final String COLUMN_SONG_ID = "song_id";
         public static final String COLUMN_TITLE = "title";
         public static final String COLUMN_ALBUM = "album";
+        public static final String COLUMN_ALBUM_ID = "album_id";
         public static final String COLUMN_ARTIST = "artist";
+        public static final String COLUMN_ARTIST_ID = "artist_id";
         public static final String COLUMN_FOLDER = "folder";
         public static final String COLUMN_ALBUM_ART = "album_art";
         public static final String COLUMN_DURATION = "duration";
         public static final String COLUMN_PATH = "path";
-        public static final String COLUMN_IS_SYNCED = "is_synced";
 
 
         public static Uri buildSongWithIdUri(String songId) {
