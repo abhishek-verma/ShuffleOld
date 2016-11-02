@@ -37,13 +37,13 @@ public class MediaProvider extends ContentProvider {
     // The URI Matcher used by this content provider
     private static final UriMatcher sUriMatcher = buildUriMatcher();
 
-    private static final SQLiteQueryBuilder mSongsInPlaylistQueryBuilder;
+    private static final SQLiteQueryBuilder songsJoinPlaylistQueryBuilder;
 
     static {
-        mSongsInPlaylistQueryBuilder = new SQLiteQueryBuilder();
+        songsJoinPlaylistQueryBuilder = new SQLiteQueryBuilder();
 
-        mSongsInPlaylistQueryBuilder.setTables(
-                MediaEntry.TABLE_NAME + " INNER JOIN " +
+        songsJoinPlaylistQueryBuilder.setTables(
+                MediaEntry.TABLE_NAME + " CROSS JOIN " +
                         PlaylistsEntry.TABLE_NAME +
                         " ON " + MediaEntry.TABLE_NAME +
                         "." + MediaEntry.COLUMN_SONG_ID +
@@ -120,18 +120,7 @@ public class MediaProvider extends ContentProvider {
                 break;
 
             case SONGS_BY_PLAYLIST:
-//                String newSelection = selection
-//                        + " AND "
-//                        + PlaylistsEntry.TABLE_NAME + "."
-//                        + PlaylistsEntry.COLUMN_PLAYLIST_NAME
-//                        + " = ?";
-//
-//                List<String> selectionArgsList = Arrays.asList(selectionArgs);
-//                selectionArgsList.add(MediaEntry.getPlaylistNameFromUri(uri));
-//                String[] newSelectionArgs;
-//                newSelectionArgs = selectionArgsList.toArray(selectionArgs);
-
-                retCursor = mSongsInPlaylistQueryBuilder.query(mOpenHelper.getReadableDatabase(),
+                retCursor = songsJoinPlaylistQueryBuilder.query(mOpenHelper.getReadableDatabase(),
                         projection,
                         selection,
                         selectionArgs,
@@ -140,8 +129,9 @@ public class MediaProvider extends ContentProvider {
                 break;
 
             case PLAYLISTS:
-                retCursor = mOpenHelper.getReadableDatabase().query(
-                        PlaylistsEntry.TABLE_NAME,
+                //Still using query builder because in some cases albumart is needed for respective playlists
+                // thus songs table is also required
+                retCursor = songsJoinPlaylistQueryBuilder.query(mOpenHelper.getReadableDatabase(),
                         projection,
                         selection,
                         selectionArgs,

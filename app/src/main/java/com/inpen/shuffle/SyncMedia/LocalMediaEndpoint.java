@@ -1,4 +1,4 @@
-package com.inpen.shuffle.SyncMedia;
+package com.inpen.shuffle.syncmedia;
 
 import android.content.ContentUris;
 import android.content.ContentValues;
@@ -67,15 +67,18 @@ public class LocalMediaEndpoint implements MediaEndpoint {
                 cv.put(MediaContract.MediaEntry.COLUMN_PATH, path);
                 cv.put(MediaContract.MediaEntry.COLUMN_TITLE, title);
                 cv.put(MediaContract.MediaEntry.COLUMN_ALBUM, album);
-                cv.put(MediaContract.MediaEntry.COLUMN_ALBUM_ID, albumId);
+                cv.put(MediaContract.MediaEntry.COLUMN_ALBUM_ID, String.valueOf(albumId));
                 cv.put(MediaContract.MediaEntry.COLUMN_FOLDER, MediaContract.MediaEntry.getSongFolder(path));
                 cv.put(MediaContract.MediaEntry.COLUMN_ARTIST, artist);
-                cv.put(MediaContract.MediaEntry.COLUMN_ARTIST_ID, artistID);
-                cv.put(MediaContract.MediaEntry.COLUMN_DURATION, duration);
+                cv.put(MediaContract.MediaEntry.COLUMN_ARTIST_ID, String.valueOf(artistID));
+                cv.put(MediaContract.MediaEntry.COLUMN_DURATION, String.valueOf(duration));
                 cv.put(MediaContract.MediaEntry.COLUMN_ALBUM_ART, albumArt);
                 cvVector.add(cv);
             } while (cur.moveToNext());
         }
+
+        if (cur != null)
+            cur.close();
 
         int inserted = 0;
         //adding to db

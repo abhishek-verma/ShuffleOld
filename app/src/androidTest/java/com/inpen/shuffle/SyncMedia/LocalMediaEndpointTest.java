@@ -1,4 +1,4 @@
-package com.inpen.shuffle.SyncMedia;
+package com.inpen.shuffle.syncmedia;
 
 import android.support.test.runner.AndroidJUnit4;
 

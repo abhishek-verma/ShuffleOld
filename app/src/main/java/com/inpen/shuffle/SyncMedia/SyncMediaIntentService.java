@@ -1,4 +1,4 @@
-package com.inpen.shuffle.SyncMedia;
+package com.inpen.shuffle.syncmedia;
 
 import android.app.IntentService;
 import android.content.Context;

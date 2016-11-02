@@ -26,7 +26,7 @@
             android:authorities="com.inpen.shuffle" />
 
         <service
-            android:name=".SyncMedia.SyncMediaIntentService"
+            android:name=".syncmedia.SyncMediaIntentService"
             android:exported="false"></service>
     </application>
 

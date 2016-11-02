@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.inpen.shuffle.mainscreen.Item;
+import com.inpen.shuffle.utils.CustomTypes;
 import com.inpen.shuffle.utils.LogHelper;
 
 import java.lang.reflect.Type;
@@ -23,18 +24,27 @@ public class SelectedItemsRepository {
 
     private static final String TAG = LogHelper.makeLogTag(QueueRepository.class);
     private static final String KEY_SELECTED_LIST = "selected_list";
+    private static final String KEY_SELECTED_TYPE = "selected_type";
 
-    public static SelectedItemsRepository mSelectedItemsRepositoryInstance;
-
-    public List<Item> mSelectedItemList = new ArrayList<>();
-
+    private static SelectedItemsRepository mSelectedItemsRepositoryInstance;
+    public CustomTypes.ItemType mItemType;
     private SharedPreferences mPreferences;
+    private List<Item> mSelectedItemList = new ArrayList<>();
 
     public static SelectedItemsRepository getInstance() {
         if (mSelectedItemsRepositoryInstance == null) {
             mSelectedItemsRepositoryInstance = new SelectedItemsRepository();
         }
         return mSelectedItemsRepositoryInstance;
+    }
+
+
+    public List<Item> getmSelectedItemList() {
+        return mSelectedItemList;
+    }
+
+    public CustomTypes.ItemType getmItemType() {
+        return mItemType;
     }
 
     public void loadData(Context context) {
@@ -47,8 +57,11 @@ public class SelectedItemsRepository {
 
         mSelectedItemList = gson.fromJson(json, type);
 
+        mItemType = CustomTypes.ItemType.fromInt(getmPreferences(context).getInt(KEY_SELECTED_TYPE, -1));
+
         if (mSelectedItemList == null) {
             mSelectedItemList = new ArrayList<>();
+            mItemType = CustomTypes.ItemType.ALBUM_ID;
         }
 
     }
@@ -60,10 +73,21 @@ public class SelectedItemsRepository {
         String json = gson.toJson(mSelectedItemList);
         editor.putString(KEY_SELECTED_LIST, json);
 
+        editor.putInt(KEY_SELECTED_TYPE, CustomTypes.ItemType.toInt(mItemType));
+
         editor.apply();
     }
 
-    public void addItem(Item[] items, Context context) {
+    public void clearData(Context context) {
+        mSelectedItemList.clear();
+        getmPreferences(context).edit().clear().apply();
+    }
+
+    public void setItemType(CustomTypes.ItemType itemType) {
+        mItemType = itemType;
+    }
+
+    public void addItems(List<Item> items) {
 
         for (Item item : items) {
             mSelectedItemList.add(item);
@@ -71,7 +95,11 @@ public class SelectedItemsRepository {
 
     }
 
-    public void removeItem(Item item, Context context) {
+    public void addItem(Item item) {
+        mSelectedItemList.add(item);
+    }
+
+    public void removeItem(Item item) {
         mSelectedItemList.remove(item);
     }
 

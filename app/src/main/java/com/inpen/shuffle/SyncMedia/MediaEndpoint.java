@@ -1,4 +1,4 @@
-package com.inpen.shuffle.SyncMedia;
+package com.inpen.shuffle.syncmedia;
 
 /**
  * Created by Abhishek on 10/25/2016.

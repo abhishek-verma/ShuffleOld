@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.inpen.shuffle.utils.CustomTypes.State;
 import com.inpen.shuffle.utils.LogHelper;
 import com.inpen.shuffle.utils.QueueHelper;
 
