@@ -46,13 +46,13 @@ public interface MainScreenContract {
 
 
         String[] ALBUMS_QUERY_CURSOR_COLUMNS = {
-                MediaContract.MediaEntry.TABLE_NAME + "." + MediaContract.MediaEntry.COLUMN_ALBUM_ID,
+                MediaContract.MediaEntry.TABLE_NAME + "." + MediaContract.MediaEntry.COLUMN_ALBUM_KEY,
                 MediaContract.MediaEntry.TABLE_NAME + "." + MediaContract.MediaEntry.COLUMN_ALBUM,
                 MediaContract.MediaEntry.TABLE_NAME + "." + MediaContract.MediaEntry.COLUMN_ALBUM_ART
         };
 
         String[] ARTISTS_QUERY_CURSOR_COLUMNS = {
-                MediaContract.MediaEntry.TABLE_NAME + "." + MediaContract.MediaEntry.COLUMN_ARTIST_ID,
+                MediaContract.MediaEntry.TABLE_NAME + "." + MediaContract.MediaEntry.COLUMN_ARTIST_KEY,
                 MediaContract.MediaEntry.TABLE_NAME + "." + MediaContract.MediaEntry.COLUMN_ARTIST,
                 MediaContract.MediaEntry.TABLE_NAME + "." + MediaContract.MediaEntry.COLUMN_ALBUM_ART
         };

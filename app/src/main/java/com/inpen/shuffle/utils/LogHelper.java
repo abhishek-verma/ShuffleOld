@@ -63,17 +63,10 @@ public class LogHelper {
         log(tag, Log.WARN, null, messages);
     }
 
-    public static void w(String tag, Throwable t, Object... messages) {
-        log(tag, Log.WARN, t, messages);
-    }
-
     public static void e(String tag, Object... messages) {
         log(tag, Log.ERROR, null, messages);
     }
 
-    public static void e(String tag, Throwable t, Object... messages) {
-        log(tag, Log.ERROR, t, messages);
-    }
 
     public static void log(String tag, int level, Throwable t, Object... messages) {
         if (true) {//TODO remove!

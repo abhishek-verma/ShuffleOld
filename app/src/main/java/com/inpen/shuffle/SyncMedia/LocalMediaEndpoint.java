@@ -33,18 +33,20 @@ public class LocalMediaEndpoint implements MediaEndpoint {
         final int COL_INDEX_DATA = 0;
         final int COL_INDEX_TITLE = 1;
         final int COL_INDEX_ALBUM = 2;
-        final int COL_INDEX_ALBUM_ID = 3;
+        final int COL_INDEX_ALBUM_KEY = 3;
         final int COL_INDEX_ARTIST = 4;
-        final int COL_INDEX_ARTIST_ID = 5;
+        final int COL_INDEX_ARTIST_KEY = 5;
         final int COL_INDEX_DURATION = 6;
+        final int COL_INDEX_ALBUM_ID = 7;
         String[] projection = {
                 MediaStore.Audio.Media.DATA,
                 MediaStore.Audio.Media.TITLE,
                 MediaStore.Audio.Media.ALBUM,
-                MediaStore.Audio.Media.ALBUM_ID,
+                MediaStore.Audio.Media.ALBUM_KEY,
                 MediaStore.Audio.Media.ARTIST,
-                MediaStore.Audio.Media.ARTIST_ID,
-                MediaStore.Audio.Media.DURATION
+                MediaStore.Audio.Media.ARTIST_KEY,
+                MediaStore.Audio.Media.DURATION,
+                MediaStore.Audio.Media.ALBUM_ID
         };
 
         Cursor cur = mContext.getContentResolver()
@@ -59,19 +61,19 @@ public class LocalMediaEndpoint implements MediaEndpoint {
                 String album = cur.getString(COL_INDEX_ALBUM);
                 String artist = cur.getString(COL_INDEX_ARTIST);
                 long duration = cur.getLong(COL_INDEX_DURATION);
-                int albumId = cur.getInt(COL_INDEX_ARTIST_ID);
-                int artistID = cur.getInt(COL_INDEX_ARTIST_ID);
-                String albumArt = getAlbumArtForAlbum(albumId);
+                String albumKey = cur.getString(COL_INDEX_ALBUM_KEY);
+                String artistKey = cur.getString(COL_INDEX_ARTIST_KEY);
+                String albumArt = getAlbumArtForAlbum(cur.getInt(COL_INDEX_ALBUM_ID));
                 cv = new ContentValues();
                 cv.put(MediaContract.MediaEntry.COLUMN_SONG_ID, Audio.generateSongID(title, artist, duration));
                 cv.put(MediaContract.MediaEntry.COLUMN_PATH, path);
                 cv.put(MediaContract.MediaEntry.COLUMN_TITLE, title);
                 cv.put(MediaContract.MediaEntry.COLUMN_ALBUM, album);
-                cv.put(MediaContract.MediaEntry.COLUMN_ALBUM_ID, String.valueOf(albumId));
+                cv.put(MediaContract.MediaEntry.COLUMN_ALBUM_KEY, albumKey);
                 cv.put(MediaContract.MediaEntry.COLUMN_FOLDER_PATH, MediaContract.MediaEntry.getFolderPathFromFullPath(path));
                 cv.put(MediaContract.MediaEntry.COLUMN_ARTIST, artist);
-                cv.put(MediaContract.MediaEntry.COLUMN_ARTIST_ID, String.valueOf(artistID));
-                cv.put(MediaContract.MediaEntry.COLUMN_DURATION, String.valueOf(duration));
+                cv.put(MediaContract.MediaEntry.COLUMN_ARTIST_KEY, artistKey);
+                cv.put(MediaContract.MediaEntry.COLUMN_DURATION, Long.toString(duration));
                 cv.put(MediaContract.MediaEntry.COLUMN_ALBUM_ART, albumArt);
                 cvVector.add(cv);
             } while (cur.moveToNext());

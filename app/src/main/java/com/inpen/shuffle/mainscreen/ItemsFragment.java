@@ -83,7 +83,7 @@ public class ItemsFragment extends Fragment implements MainScreenContract.ItemsV
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_albums, container, false);
+        View view = inflater.inflate(R.layout.fragment_items, container, false);
 
         mItemsAdapter = new ItemsAdapter(new ArrayList<Item>(0), new ItemsAdapter.ItemsListener() {
             @Override

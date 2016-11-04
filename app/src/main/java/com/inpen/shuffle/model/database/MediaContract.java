@@ -37,9 +37,9 @@ public class MediaContract {
         public static final String COLUMN_SONG_ID = "song_id";
         public static final String COLUMN_TITLE = "title";
         public static final String COLUMN_ALBUM = "album";
-        public static final String COLUMN_ALBUM_ID = "album_id";
+        public static final String COLUMN_ALBUM_KEY = "album_id";
         public static final String COLUMN_ARTIST = "artist";
-        public static final String COLUMN_ARTIST_ID = "artist_id";
+        public static final String COLUMN_ARTIST_KEY = "artist_id";
         public static final String COLUMN_FOLDER_PATH = "folder";
         public static final String COLUMN_ALBUM_ART = "album_art";
         public static final String COLUMN_DURATION = "duration";

@@ -8,7 +8,7 @@ public class Item {
 
     public static String SELECT_ALL_ITEM_VIEW_ID = "select_all";
     public static String SELECT_ALL_ITEM_VIEW_TITLE = "SELECT ALL";
-    public static String TOGGLE_ALL_ITEM_VIEW_TITLE = "TOGGLE ALL";//TODO change title to this if first item is selected
+    public static String DESELECT_ALL_ITEM_VIEW_TITLE = "DESELECT ALL";//TODO change title to this if first item is selected
     public static String SELECT_ALL_ITEM_VIEW_IMAGEPATH = "";
 
     private String mId;
@@ -54,6 +54,16 @@ public class Item {
 
     public void setSelected(boolean selected) {
         mIsSelected = selected;
+
+        if (mTitle.equals(SELECT_ALL_ITEM_VIEW_TITLE))
+            mTitle = DESELECT_ALL_ITEM_VIEW_TITLE;
+        else if (mTitle.equals(DESELECT_ALL_ITEM_VIEW_TITLE))
+            mTitle = SELECT_ALL_ITEM_VIEW_TITLE;
+    }
+
+    @Override
+    public String toString() {
+        return "id:" + mId + " title:" + mTitle;
     }
 
     @Override

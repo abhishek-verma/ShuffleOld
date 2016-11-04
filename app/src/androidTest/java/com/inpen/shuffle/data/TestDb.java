@@ -115,9 +115,9 @@ public class TestDb {
         columnHashSet.add(MediaContract.MediaEntry.COLUMN_SONG_ID);
         columnHashSet.add(MediaContract.MediaEntry.COLUMN_TITLE);
         columnHashSet.add(MediaContract.MediaEntry.COLUMN_ALBUM);
-        columnHashSet.add(MediaContract.MediaEntry.COLUMN_ALBUM_ID);
+        columnHashSet.add(MediaContract.MediaEntry.COLUMN_ALBUM_KEY);
         columnHashSet.add(MediaContract.MediaEntry.COLUMN_ARTIST);
-        columnHashSet.add(MediaContract.MediaEntry.COLUMN_ARTIST_ID);
+        columnHashSet.add(MediaContract.MediaEntry.COLUMN_ARTIST_KEY);
         columnHashSet.add(MediaContract.MediaEntry.COLUMN_ALBUM_ART);
         columnHashSet.add(MediaContract.MediaEntry.COLUMN_DURATION);
         columnHashSet.add(MediaContract.MediaEntry.COLUMN_PATH);

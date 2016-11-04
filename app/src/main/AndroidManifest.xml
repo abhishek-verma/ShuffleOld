@@ -29,7 +29,12 @@
             android:name=".syncmedia.SyncMediaIntentService"
             android:exported="false" />
 
-        <activity android:name=".playerscreen.PlayerActivity"></activity>
+        <activity android:name=".playerscreen.PlayerActivity" />
+
+        <service
+            android:name=".playback.MediaPlayerService"
+            android:enabled="true"
+            android:exported="true"></service>
     </application>
 
 </manifest>

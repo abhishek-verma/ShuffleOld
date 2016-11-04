@@ -1,12 +1,15 @@
 package com.inpen.shuffle.mainscreen;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 
 import com.inpen.shuffle.model.QueueRepository;
 import com.inpen.shuffle.model.SelectedItemsRepository;
+import com.inpen.shuffle.playerscreen.PlayerActivity;
 import com.inpen.shuffle.syncmedia.SyncMediaIntentService;
 import com.inpen.shuffle.utils.CustomTypes;
+import com.inpen.shuffle.utils.LogHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +22,7 @@ import static com.google.gson.internal.$Gson$Preconditions.checkNotNull;
 
 public class MainPresenter implements MainScreenContract.ActivityActionsListener, SelectedItemsRepository.IsRepositoryEmptyObserver {
 
+    private static final String LOG_TAG = LogHelper.makeLogTag(MainPresenter.class);
     private MainScreenContract.MainView mMainView;
     private SelectedItemsRepository mSelectedItemsRepository;
 
@@ -56,7 +60,7 @@ public class MainPresenter implements MainScreenContract.ActivityActionsListener
 
 
     @Override
-    public void shuffleAndPlay(Context context) {
+    public void shuffleAndPlay(final Context context) {
 
         // Getting list of selected items ids as String
         List<String> selectorItems = new ArrayList<>();
@@ -68,11 +72,19 @@ public class MainPresenter implements MainScreenContract.ActivityActionsListener
         // initialize queueRepo
         QueueRepository queueRepository = QueueRepository.getInstance();
         queueRepository.initializeQueue(mSelectedItemsRepository.getmItemType(),
-                selectorItems, context);
+                selectorItems, context, new QueueRepository.QueueRepositoryCallback() {
+                    @Override
+                    public void onMusicCatalogReady(boolean success) {
 
-        // launch player activity on callback
-
-        // start service
+                        if (success) {
+                            LogHelper.v(LOG_TAG, "onMusicCatalogReady! starting player activity.");
+                            //TODO start player activity
+                            context.startActivity(new Intent(context, PlayerActivity.class));
+                        } else {
+                            LogHelper.e(LOG_TAG, "Something wrong happened while curating queue!");
+                        }
+                    }
+                });
 
     }
 

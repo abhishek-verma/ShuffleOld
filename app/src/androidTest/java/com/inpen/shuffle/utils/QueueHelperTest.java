@@ -58,9 +58,9 @@ public class QueueHelperTest {
             cv.put(MediaContract.MediaEntry.COLUMN_SONG_ID, "testSongId" + i);
             cv.put(MediaContract.MediaEntry.COLUMN_TITLE, "testTitle" + i);
             cv.put(MediaContract.MediaEntry.COLUMN_ALBUM, "testAlbum" + i);
-            cv.put(MediaContract.MediaEntry.COLUMN_ALBUM_ID, 100 + i);
+            cv.put(MediaContract.MediaEntry.COLUMN_ALBUM_KEY, 100 + i);
             cv.put(MediaContract.MediaEntry.COLUMN_ARTIST, "testArtist" + i);
-            cv.put(MediaContract.MediaEntry.COLUMN_ARTIST_ID, 100 + i);
+            cv.put(MediaContract.MediaEntry.COLUMN_ARTIST_KEY, 100 + i);
             cv.put(MediaContract.MediaEntry.COLUMN_FOLDER_PATH, "testFolderName" + i);
             cv.put(MediaContract.MediaEntry.COLUMN_ALBUM_ART, "testArtUrl/subpath" + i);
             cv.put(MediaContract.MediaEntry.COLUMN_DURATION, "98293" + i);

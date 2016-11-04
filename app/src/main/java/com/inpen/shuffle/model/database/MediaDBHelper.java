@@ -32,9 +32,9 @@ public class MediaDbHelper extends SQLiteOpenHelper{
                 MediaEntry.COLUMN_TITLE + " TEXT NOT NULL, " +
                 MediaEntry.COLUMN_PATH + " TEXT UNIQUE NOT NULL, " +
                 MediaEntry.COLUMN_ALBUM + " TEXT, " +
-                MediaEntry.COLUMN_ALBUM_ID + " TEXT NOT NULL, " +
+                MediaEntry.COLUMN_ALBUM_KEY + " TEXT NOT NULL, " +
                 MediaEntry.COLUMN_ARTIST + " TEXT, " +
-                MediaEntry.COLUMN_ARTIST_ID + " TEXT NOT NULL, " +
+                MediaEntry.COLUMN_ARTIST_KEY + " TEXT NOT NULL, " +
                 MediaEntry.COLUMN_FOLDER_PATH + " TEXT NOT NULL, " +
                 MediaEntry.COLUMN_DURATION + " TEXT NOT NULL, " +
                 MediaEntry.COLUMN_ALBUM_ART + " TEXT " +
@@ -58,4 +58,5 @@ public class MediaDbHelper extends SQLiteOpenHelper{
         // TODO implement when required
         // although not required in DATABASE_VERSION = 1
     }
+
 }

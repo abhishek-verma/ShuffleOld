@@ -64,9 +64,9 @@ public class TestMediaProvider {
             cv.put(MediaEntry.COLUMN_SONG_ID, "testSongId" + i);
             cv.put(MediaEntry.COLUMN_TITLE, "testTitle" + i);
             cv.put(MediaEntry.COLUMN_ALBUM, "testAlbum" + i);
-            cv.put(MediaEntry.COLUMN_ALBUM_ID, 100 + i);
+            cv.put(MediaEntry.COLUMN_ALBUM_KEY, 100 + i);
             cv.put(MediaEntry.COLUMN_ARTIST, "testArtist" + i);
-            cv.put(MediaEntry.COLUMN_ARTIST_ID, 100 + i);
+            cv.put(MediaEntry.COLUMN_ARTIST_KEY, 100 + i);
             cv.put(MediaEntry.COLUMN_FOLDER_PATH, "testFolderName" + i);
             cv.put(MediaEntry.COLUMN_ALBUM_ART, "testArtUrl/subpath" + i);
             cv.put(MediaEntry.COLUMN_DURATION, "98293" + i);
@@ -124,9 +124,9 @@ public class TestMediaProvider {
         final String[] SONGS_QUEUE_CURSOR_COLUMNS = {
                 MediaEntry.TABLE_NAME + "." + MediaEntry.COLUMN_TITLE,
                 MediaEntry.TABLE_NAME + "." + MediaEntry.COLUMN_ALBUM,
-                MediaEntry.TABLE_NAME + "." + MediaEntry.COLUMN_ALBUM_ID,
+                MediaEntry.TABLE_NAME + "." + MediaEntry.COLUMN_ALBUM_KEY,
                 MediaEntry.TABLE_NAME + "." + MediaEntry.COLUMN_ARTIST,
-                MediaEntry.TABLE_NAME + "." + MediaEntry.COLUMN_ARTIST_ID,
+                MediaEntry.TABLE_NAME + "." + MediaEntry.COLUMN_ARTIST_KEY,
                 MediaEntry.TABLE_NAME + "." + MediaEntry.COLUMN_ALBUM_ART,
                 MediaEntry.TABLE_NAME + "." + MediaEntry.COLUMN_DURATION,
                 MediaEntry.TABLE_NAME + "." + MediaEntry.COLUMN_PATH

@@ -21,7 +21,7 @@ public class SyncMediaIntentService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        // TODO sync data from local device
+        // sync data from local device
         LocalMediaEndpoint localMediaEndpoint = new LocalMediaEndpoint(this);
         localMediaEndpoint.syncMedia(new MediaEndpoint.Callback() {
             @Override

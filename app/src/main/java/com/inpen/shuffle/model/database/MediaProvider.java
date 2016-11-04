@@ -261,6 +261,8 @@ public class MediaProvider extends ContentProvider {
         switch (match) {
             case SONGS: {
                 db.beginTransaction();
+                // removing all previous songs
+                db.delete(MediaEntry.TABLE_NAME, null, null);
                 try {
                     for (ContentValues val : values) {
                         long _id
