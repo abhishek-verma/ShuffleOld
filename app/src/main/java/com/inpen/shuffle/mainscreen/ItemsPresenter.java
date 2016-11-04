@@ -23,13 +23,14 @@ import static com.google.gson.internal.$Gson$Preconditions.checkNotNull;
 
 public class ItemsPresenter implements
         MainScreenContract.ItemsFragmentListener,
-        LoaderManager.LoaderCallbacks<Cursor> {
+        LoaderManager.LoaderCallbacks<Cursor>, SelectedItemsRepository.ItemTypeObserver {
 
     private LoaderManager mLoaderManager;
     private MainScreenContract.ItemsView mItemsView;
     private Context mContext;
     private CustomTypes.ItemType mItemType;
     private SelectedItemsRepository mSelectedItemsRepository;
+    private boolean isActive = false;
 
     public ItemsPresenter(@NonNull LoaderManager loaderManager,
                           @NonNull Context context,
@@ -43,10 +44,11 @@ public class ItemsPresenter implements
 
     @Override
     public void initialize() {
+        mSelectedItemsRepository = SelectedItemsRepository.getInstance();
+        mSelectedItemsRepository.addItemTypeObserver(this);
         // Prepare the loader.  Either re-connect with an existing one,
         // or start a new one.
         mLoaderManager.initLoader(0, null, this);
-        mSelectedItemsRepository = SelectedItemsRepository.getInstance();
     }
 
     @Override
@@ -56,10 +58,8 @@ public class ItemsPresenter implements
 
     @Override
     public void setItemSelected(Item item, boolean selectState) {
-        if (!mSelectedItemsRepository.getmItemType().equals(mItemType)) {
-            mSelectedItemsRepository.clearData(mContext);
-            mSelectedItemsRepository.setItemType(mItemType);
-        }
+
+        checkAndSetRepositoryType();
 
         // call the selecteditemrepo select add item or remove item depending on isselected
         if (selectState) {
@@ -70,16 +70,100 @@ public class ItemsPresenter implements
 
     @Override
     public void setAllItemsSelected(List<Item> itemList, boolean selectState) {
-        if (!mSelectedItemsRepository.getmItemType().equals(mItemType)) {
-            mSelectedItemsRepository.clearData(mContext);
-            mSelectedItemsRepository.setItemType(mItemType);
-        }
+
+        checkAndSetRepositoryType();
 
         if (selectState) {
-            mSelectedItemsRepository.clearData(mContext);
             mSelectedItemsRepository.addItems(itemList);
         } else {
             mSelectedItemsRepository.clearData(mContext);
+        }
+    }
+
+    public void checkAndSetRepositoryType() {
+        if (mSelectedItemsRepository.getmItemType() != null && !mSelectedItemsRepository.getmItemType().equals(mItemType)) {
+            mSelectedItemsRepository.clearData(mContext);
+            mSelectedItemsRepository.setItemType(mItemType);
+        } else if (mSelectedItemsRepository.getmItemType() == null) {
+            mSelectedItemsRepository.setItemType(mItemType);
+        }
+
+        isActive = true;
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+
+        if (data == null || !data.moveToFirst())
+            return;
+
+        data.moveToFirst();
+
+        List<Item> itemList = new ArrayList<>();
+
+        itemList.add(new Item(Item.SELECT_ALL_ITEM_VIEW_ID,
+                Item.SELECT_ALL_ITEM_VIEW_TITLE,
+                Item.SELECT_ALL_ITEM_VIEW_IMAGEPATH,
+                false));
+
+        switch (mItemType) {
+            case ALBUM_ID:
+                do {
+                    Item item = new Item(
+                            data.getString(0),//album id
+                            data.getString(1),//album title
+                            data.getString(2),//Album art
+                            false);
+                    addItem(itemList, item);
+                } while (data.moveToNext());
+                break;
+            case ARTIST_ID:
+                do {
+                    Item item = new Item(
+                            data.getString(0),//artist id
+                            data.getString(1),//artist title
+                            data.getString(2),//Album art
+                            false);
+                    addItem(itemList, item);
+                } while (data.moveToNext());
+                break;
+            case FOLDER:
+                do {
+                    Item item = new Item(
+                            data.getString(0),//folder path
+                            MediaContract.MediaEntry.getSongFolderFromFolderPath(data.getString(0)),//folder name from folder path
+                            data.getString(1),//Album art
+                            false);
+                    addItem(itemList, item);
+                } while (data.moveToNext());
+                break;
+            case PLAYLIST:
+                do {
+                    Item item = new Item(
+                            data.getString(0),//playlist name
+                            data.getString(0),//playlist name
+                            data.getString(1),//Album art
+                            false);
+                    addItem(itemList, item);
+                } while (data.moveToNext());
+                break;
+        }
+
+        mItemsView.showItems(itemList);
+
+        if (mSelectedItemsRepository.mItemType != null
+                && mSelectedItemsRepository.getmItemType().equals(mItemType)) {
+            mItemsView.selectItems(mSelectedItemsRepository.getmSelectedItemList());
+        }
+
+    }
+
+    // This method is used inside method onLoadFinished to check
+    // add items To a list also supplied as parameters
+    private final void addItem(List<Item> itemList, Item item) {
+
+        if (!itemList.contains(item)) {
+            itemList.add(item);
         }
     }
 
@@ -114,70 +198,18 @@ public class ItemsPresenter implements
     }
 
     @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+    public void onLoaderReset(Loader loader) {
 
-        if (data == null || !data.moveToFirst())
-            return;
-
-        data.moveToFirst();
-
-        List<Item> itemList = new ArrayList<>();
-
-        itemList.add(new Item(Item.SELECT_ALL_ITEM_VIEW_ID,
-                Item.SELECT_ALL_ITEM_VIEW_TITLE,
-                Item.SELECT_ALL_ITEM_VIEW_IMAGEPATH,
-                false));
-
-        switch (mItemType) {
-            case ALBUM_ID:
-                do {
-                    Item item = new Item(
-                            data.getString(0),//album id
-                            data.getString(1),//album title
-                            data.getString(2),//Album art
-                            false);
-                    itemList.add(item);
-                } while (data.moveToNext());
-                break;
-            case ARTIST_ID:
-                do {
-                    Item item = new Item(
-                            data.getString(0),//artist id
-                            data.getString(1),//artist title
-                            data.getString(2),//Album art
-                            false);
-                    itemList.add(item);
-                } while (data.moveToNext());
-                break;
-            case FOLDER:
-                do {
-                    Item item = new Item(
-                            data.getString(0),//folder path
-                            data.getString(1),//folder name
-                            data.getString(2),//Album art
-                            false);
-                    itemList.add(item);
-                } while (data.moveToNext());
-                break;
-            case PLAYLIST:
-                do {
-                    Item item = new Item(
-                            data.getString(0),//playlist name
-                            data.getString(0),//playlist name
-                            data.getString(1),//Album art
-                            false);
-                    itemList.add(item);
-                } while (data.moveToNext());
-                break;
-        }
-
-        mItemsView.showItems(itemList);
-        data.close();
     }
 
     @Override
-    public void onLoaderReset(Loader loader) {
-
+    public void onItemTypeChanged(CustomTypes.ItemType itemType) {
+        if (!itemType.equals(mItemType)) {
+            if (isActive) {
+                isActive = false;
+                mItemsView.clearSelection();
+            }
+        }
     }
 
 }

@@ -49,6 +49,8 @@ public class MediaProvider extends ContentProvider {
                         "." + MediaEntry.COLUMN_SONG_ID +
                         " = " + PlaylistsEntry.TABLE_NAME +
                         "." + PlaylistsEntry.COLUMN_SONG_ID);
+
+        songsJoinPlaylistQueryBuilder.setDistinct(true);
     }
 
 
@@ -110,12 +112,13 @@ public class MediaProvider extends ContentProvider {
         switch (sUriMatcher.match(uri)) {
             case SONGS:
                 retCursor = mOpenHelper.getReadableDatabase().query(
+                        true,
                         MediaEntry.TABLE_NAME,
                         projection,
                         selection,
                         selectionArgs,
                         null, null,
-                        sortOrder
+                        sortOrder, null
                 );
                 break;
 

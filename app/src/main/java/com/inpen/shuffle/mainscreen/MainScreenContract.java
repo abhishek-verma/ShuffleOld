@@ -1,6 +1,9 @@
 package com.inpen.shuffle.mainscreen;
 
+import android.content.Context;
+
 import com.inpen.shuffle.model.database.MediaContract;
+import com.inpen.shuffle.utils.CustomTypes;
 
 import java.util.List;
 
@@ -10,11 +13,21 @@ import java.util.List;
 
 public interface MainScreenContract {
 
+    interface MainView {
+        boolean hasPermissions();
+
+        void getPermissions();
+
+        void onFabStateChanged(CustomTypes.MainFabState state);
+    }
+
     interface ActivityActionsListener {
 
-        void scanMedia();
+        void scanMedia(Context context);
 
-        void shuffleAndPlay(List<String> ItemIdList);
+        void shuffleAndPlay(Context context);
+
+        void init(Context context);
 
     }
 
@@ -24,31 +37,33 @@ public interface MainScreenContract {
 
         void showItems(List<Item> itemList);
 
+        void clearSelection();
+
+        void selectItems(List<Item> selectedItemList);
     }
 
     interface ItemsFragmentListener {
 
 
         String[] ALBUMS_QUERY_CURSOR_COLUMNS = {
-                "DISTINCT " + MediaContract.MediaEntry.TABLE_NAME + "." + MediaContract.MediaEntry.COLUMN_ALBUM_ID,
+                MediaContract.MediaEntry.TABLE_NAME + "." + MediaContract.MediaEntry.COLUMN_ALBUM_ID,
                 MediaContract.MediaEntry.TABLE_NAME + "." + MediaContract.MediaEntry.COLUMN_ALBUM,
                 MediaContract.MediaEntry.TABLE_NAME + "." + MediaContract.MediaEntry.COLUMN_ALBUM_ART
         };
 
         String[] ARTISTS_QUERY_CURSOR_COLUMNS = {
-                "DISTINCT " + MediaContract.MediaEntry.TABLE_NAME + "." + MediaContract.MediaEntry.COLUMN_ARTIST_ID,
+                MediaContract.MediaEntry.TABLE_NAME + "." + MediaContract.MediaEntry.COLUMN_ARTIST_ID,
                 MediaContract.MediaEntry.TABLE_NAME + "." + MediaContract.MediaEntry.COLUMN_ARTIST,
                 MediaContract.MediaEntry.TABLE_NAME + "." + MediaContract.MediaEntry.COLUMN_ALBUM_ART
         };
 
         String[] FOLDERS_QUERY_CURSOR_COLUMNS = {
-                "DISTINCT " + MediaContract.MediaEntry.TABLE_NAME + "." + MediaContract.MediaEntry.COLUMN_PATH,
-                MediaContract.MediaEntry.TABLE_NAME + "." + MediaContract.MediaEntry.COLUMN_FOLDER,
+                MediaContract.MediaEntry.TABLE_NAME + "." + MediaContract.MediaEntry.COLUMN_FOLDER_PATH,
                 MediaContract.MediaEntry.TABLE_NAME + "." + MediaContract.MediaEntry.COLUMN_ALBUM_ART
         };
 
         String[] PLAYLISTS_QUERY_CURSOR_COLUMNS = {
-                "DISTINCT " + MediaContract.PlaylistsEntry.TABLE_NAME + "." + MediaContract.PlaylistsEntry.COLUMN_PLAYLIST_NAME,
+                MediaContract.PlaylistsEntry.TABLE_NAME + "." + MediaContract.PlaylistsEntry.COLUMN_PLAYLIST_NAME,
                 MediaContract.MediaEntry.TABLE_NAME + "." + MediaContract.MediaEntry.COLUMN_ALBUM_ART
         };
 

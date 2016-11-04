@@ -67,7 +67,7 @@ public class TestMediaProvider {
             cv.put(MediaEntry.COLUMN_ALBUM_ID, 100 + i);
             cv.put(MediaEntry.COLUMN_ARTIST, "testArtist" + i);
             cv.put(MediaEntry.COLUMN_ARTIST_ID, 100 + i);
-            cv.put(MediaEntry.COLUMN_FOLDER, "testFolderName" + i);
+            cv.put(MediaEntry.COLUMN_FOLDER_PATH, "testFolderName" + i);
             cv.put(MediaEntry.COLUMN_ALBUM_ART, "testArtUrl/subpath" + i);
             cv.put(MediaEntry.COLUMN_DURATION, "98293" + i);
             cv.put(MediaEntry.COLUMN_PATH, "testPath/subpath" + i);

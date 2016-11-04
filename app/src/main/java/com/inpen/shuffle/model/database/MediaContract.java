@@ -4,7 +4,7 @@ import android.content.ContentResolver;
 import android.net.Uri;
 import android.provider.BaseColumns;
 
-import java.util.List;
+import java.io.File;
 
 /**
  * Created by Abhishek on 10/21/2016.
@@ -40,7 +40,7 @@ public class MediaContract {
         public static final String COLUMN_ALBUM_ID = "album_id";
         public static final String COLUMN_ARTIST = "artist";
         public static final String COLUMN_ARTIST_ID = "artist_id";
-        public static final String COLUMN_FOLDER = "folder";
+        public static final String COLUMN_FOLDER_PATH = "folder";
         public static final String COLUMN_ALBUM_ART = "album_art";
         public static final String COLUMN_DURATION = "duration";
         public static final String COLUMN_PATH = "path";
@@ -64,12 +64,12 @@ public class MediaContract {
             return uri.getLastPathSegment();
         }
 
-        public static String getSongFolder(String path) {
-            List<String> pathSegments = Uri.parse(path).getPathSegments();
-            if (pathSegments.size() >= 2) {
-                return pathSegments.get(pathSegments.size() - 2);
-            }
-            return null;
+        public static String getSongFolderFromFolderPath(String path) {
+            return Uri.parse(path).getLastPathSegment();
+        }
+
+        public static String getFolderPathFromFullPath(String path) {
+            return new File(path).getParent();
         }
     }
 

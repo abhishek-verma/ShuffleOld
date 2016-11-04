@@ -1,12 +1,10 @@
 package com.inpen.shuffle.mainscreen;
 
-import java.util.Observable;
-
 /**
  * Created by Abhishek on 10/27/2016.
  */
 
-public class Item extends Observable {
+public class Item {
 
     public static String SELECT_ALL_ITEM_VIEW_ID = "select_all";
     public static String SELECT_ALL_ITEM_VIEW_TITLE = "SELECT ALL";
@@ -56,17 +54,15 @@ public class Item extends Observable {
 
     public void setSelected(boolean selected) {
         mIsSelected = selected;
-
-        setChanged();
-        notifyObservers();
     }
 
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof Item) {
             Item item = (Item) obj;
-            if (item.getId().equals(mId))
-                return true;
+
+            return item.getId().equals(mId)
+                    && item.getTitle().equals(mTitle);
         }
         return super.equals(obj);
     }

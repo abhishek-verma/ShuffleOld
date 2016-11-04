@@ -1,14 +1,14 @@
-package com.inpen.shuffle.utils;
+package com.inpen.shuffle.model;
 
 import android.content.Context;
 import android.database.Cursor;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import com.inpen.shuffle.model.Audio;
 import com.inpen.shuffle.model.database.MediaContract.MediaEntry;
 import com.inpen.shuffle.model.database.MediaContract.PlaylistsEntry;
 import com.inpen.shuffle.model.database.MediaProvider;
+import com.inpen.shuffle.utils.CustomTypes;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -70,22 +70,13 @@ public class QueueHelper {
         return s.toString();
     }
 
-    public synchronized List<Audio> generateQueue(MediaSelectorType selector,
+    public synchronized List<Audio> generateQueue(@Nullable CustomTypes.ItemType selector,
                                                   @Nullable String[] selectorItems) {
 
         Cursor cursor = null;
         //context.getContentResolver().query()
 
         switch (selector) {
-            case NONE: {
-                cursor = mContext.getContentResolver()
-                        .query(MediaEntry.CONTENT_URI,
-                                SONGS_QUEUE_CURSOR_COLUMNS,
-                                null,
-                                null,
-                                MediaProvider.mSongsSortOrder);
-                break;
-            }
             case ALBUM_ID: {
                 cursor = mContext.getContentResolver()
                         .query(MediaEntry.CONTENT_URI,
@@ -110,7 +101,7 @@ public class QueueHelper {
                                 MediaProvider.mSongsSortOrder);
                 break;
             }
-            case PATH: {
+            case FOLDER: {
                 cursor = mContext.getContentResolver()
                         .query(MediaEntry.CONTENT_URI,
                                 SONGS_QUEUE_CURSOR_COLUMNS,
@@ -134,6 +125,16 @@ public class QueueHelper {
                                 MediaProvider.mSongsSortOrder);
                 break;
             }
+//            default: {
+//                // shuffle all songs
+//                cursor = mContext.getContentResolver()
+//                        .query(MediaEntry.CONTENT_URI,
+//                                SONGS_QUEUE_CURSOR_COLUMNS,
+//                                null,
+//                                null,
+//                                MediaProvider.mSongsSortOrder);
+//                break;
+//            }
         }
         List<Audio> audioList;
 
@@ -237,7 +238,4 @@ public class QueueHelper {
         return audioList;
     }
 
-    public enum MediaSelectorType {
-        NONE, ALBUM_ID, ARTIST_ID, PLAYLIST, PATH
-    }
 }

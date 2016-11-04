@@ -121,7 +121,7 @@ public class TestDb {
         columnHashSet.add(MediaContract.MediaEntry.COLUMN_ALBUM_ART);
         columnHashSet.add(MediaContract.MediaEntry.COLUMN_DURATION);
         columnHashSet.add(MediaContract.MediaEntry.COLUMN_PATH);
-        columnHashSet.add(MediaContract.MediaEntry.COLUMN_FOLDER);
+        columnHashSet.add(MediaContract.MediaEntry.COLUMN_FOLDER_PATH);
 
 
         List<String> existingColumns = new ArrayList<>();

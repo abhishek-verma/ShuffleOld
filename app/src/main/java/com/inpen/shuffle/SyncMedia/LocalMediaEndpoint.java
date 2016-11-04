@@ -68,7 +68,7 @@ public class LocalMediaEndpoint implements MediaEndpoint {
                 cv.put(MediaContract.MediaEntry.COLUMN_TITLE, title);
                 cv.put(MediaContract.MediaEntry.COLUMN_ALBUM, album);
                 cv.put(MediaContract.MediaEntry.COLUMN_ALBUM_ID, String.valueOf(albumId));
-                cv.put(MediaContract.MediaEntry.COLUMN_FOLDER, MediaContract.MediaEntry.getSongFolder(path));
+                cv.put(MediaContract.MediaEntry.COLUMN_FOLDER_PATH, MediaContract.MediaEntry.getFolderPathFromFullPath(path));
                 cv.put(MediaContract.MediaEntry.COLUMN_ARTIST, artist);
                 cv.put(MediaContract.MediaEntry.COLUMN_ARTIST_ID, String.valueOf(artistID));
                 cv.put(MediaContract.MediaEntry.COLUMN_DURATION, String.valueOf(duration));

@@ -20,9 +20,7 @@ import java.util.List;
 public class SelectedItemsRepository {
 
     public static final String UI_STORAGE = "com.inpen.shuffle.UI_STORAGE";
-
-
-    private static final String TAG = LogHelper.makeLogTag(QueueRepository.class);
+    private static final String LOG_TAG = LogHelper.makeLogTag(SelectedItemsRepository.class);
     private static final String KEY_SELECTED_LIST = "selected_list";
     private static final String KEY_SELECTED_TYPE = "selected_type";
 
@@ -30,9 +28,15 @@ public class SelectedItemsRepository {
     public CustomTypes.ItemType mItemType;
     private SharedPreferences mPreferences;
     private List<Item> mSelectedItemList = new ArrayList<>();
+    private List<ItemTypeObserver> mItemTypeObserverList = new ArrayList<>();
+    private List<IsRepositoryEmptyObserver> mIsRepositoryEmptyObserverList = new ArrayList<>();
 
     public static SelectedItemsRepository getInstance() {
+
+        LogHelper.v(LOG_TAG, "getInstance()");
+
         if (mSelectedItemsRepositoryInstance == null) {
+            LogHelper.v(LOG_TAG, "new instance created");
             mSelectedItemsRepositoryInstance = new SelectedItemsRepository();
         }
         return mSelectedItemsRepositoryInstance;
@@ -79,32 +83,71 @@ public class SelectedItemsRepository {
     }
 
     public void clearData(Context context) {
+        LogHelper.v(LOG_TAG, "clearData()");
         mSelectedItemList.clear();
+
+        for (IsRepositoryEmptyObserver observer : mIsRepositoryEmptyObserverList) {
+            observer.onEmptyStateChanged(true);
+        }
+
         getmPreferences(context).edit().clear().apply();
+
+        LogHelper.v(LOG_TAG, "mSelectedITemLIst.size() : " + mSelectedItemList.size());
     }
 
     public void setItemType(CustomTypes.ItemType itemType) {
+        LogHelper.v(LOG_TAG, "setItemType( " + itemType.toString() + " )");
         mItemType = itemType;
+
+        for (ItemTypeObserver observer : mItemTypeObserverList) {
+            observer.onItemTypeChanged(itemType);
+        }
     }
 
     public void addItems(List<Item> items) {
+        LogHelper.v(LOG_TAG, "addItems( " + items.toString() + " )");
 
-        for (Item item : items) {
-            mSelectedItemList.add(item);
+        if (mSelectedItemList.size() == 0) {
+            LogHelper.d("SelectedItemRepository 1st item being inserted of type: " + mItemType);
+            for (IsRepositoryEmptyObserver observer : mIsRepositoryEmptyObserverList) {
+                observer.onEmptyStateChanged(false);
+            }
         }
 
+        for (Item item : items) {
+            if (!mSelectedItemList.contains(item))
+                mSelectedItemList.add(item);
+        }
+
+        LogHelper.v(LOG_TAG, "mSelectedITemLIst.size() : " + mSelectedItemList.size());
     }
 
     public void addItem(Item item) {
+        LogHelper.v(LOG_TAG, "addItem( " + item.toString() + " )");
+        if (mSelectedItemList.size() == 0) {
+            LogHelper.d("SelectedItemRepository 1st item being inserted of type: " + mItemType);
+            for (IsRepositoryEmptyObserver observer : mIsRepositoryEmptyObserverList) {
+                observer.onEmptyStateChanged(false);
+            }
+        }
+
         mSelectedItemList.add(item);
+
+        LogHelper.v(LOG_TAG, "mSelectedITemLIst.size() : " + mSelectedItemList.size());
     }
 
     public void removeItem(Item item) {
+        LogHelper.v(LOG_TAG, "removeItem( " + item.toString() + " )");
         mSelectedItemList.remove(item);
-    }
 
-    public List<Item> getSelectedItemList() {
-        return mSelectedItemList;
+        if (mSelectedItemList.size() == 0) {
+            LogHelper.d("SelectedItemRepository empty");
+            for (IsRepositoryEmptyObserver observer : mIsRepositoryEmptyObserverList) {
+                observer.onEmptyStateChanged(true);
+            }
+        }
+
+        LogHelper.v(LOG_TAG, "mSelectedITemLIst.size() : " + mSelectedItemList.size());
     }
 
     private SharedPreferences getmPreferences(Context context) {
@@ -113,5 +156,22 @@ public class SelectedItemsRepository {
             mPreferences = context.getSharedPreferences(UI_STORAGE, Context.MODE_PRIVATE);
 
         return mPreferences;
+    }
+
+    public void addItemTypeObserver(ItemTypeObserver observer) {
+        mItemTypeObserverList.add(observer);
+    }
+
+    public void addIsRepositoryEmptyObserver(IsRepositoryEmptyObserver observer) {
+        mIsRepositoryEmptyObserverList.add(observer);
+    }
+
+    public interface ItemTypeObserver {
+        void onItemTypeChanged(CustomTypes.ItemType itemType);
+
+    }
+
+    public interface IsRepositoryEmptyObserver {
+        void onEmptyStateChanged(boolean isEmpty);
     }
 }

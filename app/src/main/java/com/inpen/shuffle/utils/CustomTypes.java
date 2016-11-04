@@ -41,8 +41,12 @@ public class CustomTypes {
         }
     }
 
-    public enum State {
+    public enum RepositoryState {
         NON_INITIALIZED, INITIALIZING, INITIALIZED
+    }
+
+    public enum MainFabState {
+        HIDDEN, PLAYER, SHUFFLE
     }
 
 }

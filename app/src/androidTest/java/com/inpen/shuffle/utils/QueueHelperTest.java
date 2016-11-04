@@ -7,6 +7,7 @@ import android.support.test.runner.AndroidJUnit4;
 import android.util.Log;
 
 import com.inpen.shuffle.model.Audio;
+import com.inpen.shuffle.model.QueueHelper;
 import com.inpen.shuffle.model.database.MediaContract;
 import com.inpen.shuffle.model.database.MediaDbHelper;
 
@@ -60,7 +61,7 @@ public class QueueHelperTest {
             cv.put(MediaContract.MediaEntry.COLUMN_ALBUM_ID, 100 + i);
             cv.put(MediaContract.MediaEntry.COLUMN_ARTIST, "testArtist" + i);
             cv.put(MediaContract.MediaEntry.COLUMN_ARTIST_ID, 100 + i);
-            cv.put(MediaContract.MediaEntry.COLUMN_FOLDER, "testFolderName" + i);
+            cv.put(MediaContract.MediaEntry.COLUMN_FOLDER_PATH, "testFolderName" + i);
             cv.put(MediaContract.MediaEntry.COLUMN_ALBUM_ART, "testArtUrl/subpath" + i);
             cv.put(MediaContract.MediaEntry.COLUMN_DURATION, "98293" + i);
             cv.put(MediaContract.MediaEntry.COLUMN_PATH, "testPath/subpath" + i);

@@ -6,9 +6,9 @@ import android.content.SharedPreferences;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.inpen.shuffle.utils.CustomTypes.State;
+import com.inpen.shuffle.utils.CustomTypes;
+import com.inpen.shuffle.utils.CustomTypes.RepositoryState;
 import com.inpen.shuffle.utils.LogHelper;
-import com.inpen.shuffle.utils.QueueHelper;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -20,7 +20,7 @@ import java.util.List;
  * MusicProviderSource defined by a constructor argument of this class.
  */
 public class QueueRepository {
-    private static final String TAG = LogHelper.makeLogTag(QueueRepository.class);
+    private static final String LOG_TAG = LogHelper.makeLogTag(QueueRepository.class);
     private static final String AUDIO_STORAGE = "com.inpen.shuffle.AUDIO_STORAGE";
     private static final String KEY_PLAYING_QUEUE = "playing_queue";
     private static final String KEY_CURRENT_TRACK_INDEX = "current_track_index";
@@ -30,23 +30,27 @@ public class QueueRepository {
     public List<Audio> mPlayingQueue;
     public int mCurrentTrackIndex;
     private SharedPreferences mPreferences;
-    private volatile State mCurrentState = State.NON_INITIALIZED;
+    private volatile RepositoryState mCurrentState = CustomTypes.RepositoryState.NON_INITIALIZED;
 
 
     public static QueueRepository getInstance() {
+        LogHelper.v(LOG_TAG, "getInstance()");
         if (mQueueRepositoryInstance == null) {
+            LogHelper.v(LOG_TAG, "new instance created");
             mQueueRepositoryInstance = new QueueRepository();
         }
 
         return mQueueRepositoryInstance;
     }
 
-    synchronized void initializeQueue(QueueHelper.MediaSelectorType selector,
-                                      List<String> selectorItems,
-                                      Context context) {
+    synchronized public void initializeQueue(CustomTypes.ItemType selector,
+                                             List<String> selectorItems,
+                                             Context context) {
+        LogHelper.v(LOG_TAG, "initializeQueue( selector:" + selector.toString()
+                + ", selectorItems size:" + selectorItems.size() + " )");
         try {
-            if (mCurrentState == State.NON_INITIALIZED) {
-                mCurrentState = State.INITIALIZING;
+            if (mCurrentState == CustomTypes.RepositoryState.NON_INITIALIZED) {
+                mCurrentState = CustomTypes.RepositoryState.INITIALIZING;
 
                 // TODO to generate playlist
                 // get data from queue helper
@@ -54,29 +58,29 @@ public class QueueRepository {
                 // store data into memory
 
 //                 Asynchronously load the music catalog in a separate thread
-//                new AsyncTask<Void, Void, State>() {
+//                new AsyncTask<Void, Void, RepositoryState>() {
 //                    @Override
-//                    protected State doInBackground(Void... params) {
+//                    protected RepositoryState doInBackground(Void... params) {
 //                        retrieveMedia();
 //                        return mCurrentState;
 //                    }
 //
 //                    @Override
-//                    protected void onPostExecute(State current) {
+//                    protected void onPostExecute(RepositoryState current) {
 //                        if (callback != null) {
-//                            callback.onMusicCatalogReady(current == State.INITIALIZED);
+//                            callback.onMusicCatalogReady(current == RepositoryState.INITIALIZED);
 //                        }
 //                    }
 //                }.execute();
 
                 storeQueue(context);
-                mCurrentState = State.INITIALIZED;
+                mCurrentState = CustomTypes.RepositoryState.INITIALIZED;
             }
         } finally {
-            if (mCurrentState != State.INITIALIZED) {
+            if (mCurrentState != CustomTypes.RepositoryState.INITIALIZED) {
                 // Something bad happened, so we reset state to NON_INITIALIZED to allow
                 // retries (eg if the network connection is temporary unavailable)
-                mCurrentState = State.NON_INITIALIZED;
+                mCurrentState = CustomTypes.RepositoryState.NON_INITIALIZED;
             }
         }
     }
@@ -94,8 +98,8 @@ public class QueueRepository {
 
     public void loadQueue(Context context) {
         try {
-            if (mCurrentState == State.NON_INITIALIZED)
-                mCurrentState = State.INITIALIZING;
+            if (mCurrentState == CustomTypes.RepositoryState.NON_INITIALIZED)
+                mCurrentState = CustomTypes.RepositoryState.INITIALIZING;
 
             Gson gson = new Gson();
             String json = getmPreferences(context).getString(KEY_PLAYING_QUEUE, null);
@@ -107,14 +111,14 @@ public class QueueRepository {
             mCurrentTrackIndex = getmPreferences(context).getInt(KEY_CURRENT_TRACK_INDEX, -1);
 
             if (mPlayingQueue != null && mPlayingQueue.size() > 0) {
-                mCurrentState = State.INITIALIZED;
+                mCurrentState = CustomTypes.RepositoryState.INITIALIZED;
             }
 
         } finally {
-            if (mCurrentState != State.INITIALIZED) {
+            if (mCurrentState != RepositoryState.INITIALIZED) {
                 // Something bad happened, so we reset state to NON_INITIALIZED to allow
                 // retries (eg if the network connection is temporary unavailable)
-                mCurrentState = State.NON_INITIALIZED;
+                mCurrentState = CustomTypes.RepositoryState.NON_INITIALIZED;
             }
         }
     }
