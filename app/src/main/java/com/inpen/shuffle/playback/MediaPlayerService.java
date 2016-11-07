@@ -15,6 +15,7 @@ import com.inpen.shuffle.utils.LogHelper;
 import java.io.IOException;
 import java.util.List;
 
+// Not Used
 public class MediaPlayerService extends Service
         implements MediaPlayer.OnCompletionListener, MediaPlayer.OnPreparedListener,
         MediaPlayer.OnErrorListener, MediaPlayer.OnSeekCompleteListener,
@@ -179,7 +180,7 @@ public class MediaPlayerService extends Service
         mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
         try {
             // Set the data source to the mMediaFile location
-            mMediaPlayer.setDataSource(mActiveAudio.getmPath());
+            mMediaPlayer.setDataSource(mActiveAudio.getmSourcePath());
         } catch (IOException e) {
             e.printStackTrace();
             stopSelf();
@@ -242,13 +243,15 @@ public class MediaPlayerService extends Service
     ///////////////////////////////////////////////////////////////////////////
     // Broadcast recievers and regestering methods
     ///////////////////////////////////////////////////////////////////////////
+
+    // I don't know what this is for
 //    private BroadcastReceiver playNewAudio = new BroadcastReceiver() {
 //        @Override
 //        public void onReceive(Context context, Intent intent) {
 //
 //            //Get the new media index form SharedPreferences
 //            mAudioIndex = new StorageUtil(getApplicationContext()).loadAudioIndex();
-//            if (audioIndex != -1 && audioIndex < audioList.size()) {
+//            if (mAudioIndex != -1 && mAudioIndex < mAudioList.size()) {
 //                //index is in a valid range
 //                activeAudio = audioList.get(audioIndex);
 //            } else {

@@ -29,9 +29,11 @@ public class QueueRepository {
 
     // cached playing queue
     public List<Audio> mPlayingQueue;
-    public int mCurrentTrackIndex;
+    public int mCurrentTrackIndex = -1;
     private SharedPreferences mPreferences;
     private volatile RepositoryState mCurrentState = CustomTypes.RepositoryState.NON_INITIALIZED;
+
+    private List<CurrentItemIndexChangedObserver> mCurrentItemIndexChangedObserverList;
 
 
     public static QueueRepository getInstance() {
@@ -56,7 +58,7 @@ public class QueueRepository {
     synchronized public void initializeQueue(CustomTypes.ItemType selector,
                                              List<String> selectorItems,
                                              Context context,
-                                             QueueRepositoryCallback callback) {
+                                             QueueRepositoryInitializedCallback callback) {
         LogHelper.v(LOG_TAG, "initializeQueue( selector:" + selector.toString()
                 + ", selectorItems size:" + selectorItems.size() + " )");
 
@@ -70,7 +72,7 @@ public class QueueRepository {
         // Asynchronously load the music catalog in a separate thread
         new AsyncTask<Object, Void, List<Audio>>() {
 
-            QueueRepositoryCallback mCallback;
+            QueueRepositoryInitializedCallback mCallback;
             Context mContext;
 
             @Override
@@ -78,7 +80,7 @@ public class QueueRepository {
                 CustomTypes.ItemType selector = (CustomTypes.ItemType) params[0];
                 List<String> selectorItems = (List<String>) params[1];
                 mContext = (Context) params[2];
-                mCallback = (QueueRepositoryCallback) params[3];
+                mCallback = (QueueRepositoryInitializedCallback) params[3];
 
                 QueueHelper queueHelper = new QueueHelper(mContext);
                 List<Audio> audioList = queueHelper.generateQueue(selector, selectorItems);
@@ -101,9 +103,9 @@ public class QueueRepository {
                     }
                 }
                 if (mCurrentState.equals(RepositoryState.INITIALIZED))
-                    mCallback.onMusicCatalogReady(true);
+                    mCallback.onPlayingQueueReady(true);
                 else
-                    mCallback.onMusicCatalogReady(false);
+                    mCallback.onPlayingQueueReady(false);
 
             }
         }.execute(selector, selectorItems, context, callback);
@@ -121,33 +123,36 @@ public class QueueRepository {
         editor.apply();
     }
 
-    public void loadQueue(Context context) {
-        if (mCurrentState == RepositoryState.INITIALIZED)
+    public boolean loadQueue(Context context) {
 
-            try {
-                if (mCurrentState == CustomTypes.RepositoryState.NON_INITIALIZED)
-                    mCurrentState = CustomTypes.RepositoryState.INITIALIZING;
+        // TODO retrieve asynchronously, use callbacks
+        try {
+            if (mCurrentState.equals(CustomTypes.RepositoryState.NON_INITIALIZED))
+                mCurrentState = CustomTypes.RepositoryState.INITIALIZING;
 
-                Gson gson = new Gson();
-                String json = getmPreferences(context).getString(KEY_PLAYING_QUEUE, null);
+            Gson gson = new Gson();
+            String json = getmPreferences(context).getString(KEY_PLAYING_QUEUE, null);
 
-                Type type = new TypeToken<ArrayList<Audio>>() {
-                }.getType();
+            Type type = new TypeToken<ArrayList<Audio>>() {
+            }.getType();
 
-                mPlayingQueue = gson.fromJson(json, type);
-                mCurrentTrackIndex = getmPreferences(context).getInt(KEY_CURRENT_TRACK_INDEX, -1);
+            mPlayingQueue = gson.fromJson(json, type);
+            mCurrentTrackIndex = getmPreferences(context).getInt(KEY_CURRENT_TRACK_INDEX, -1);
 
-                if (mPlayingQueue != null && mPlayingQueue.size() > 0) {
-                    mCurrentState = CustomTypes.RepositoryState.INITIALIZED;
-                }
-
-            } finally {
-                if (mCurrentState != RepositoryState.INITIALIZED) {
-                    // Something bad happened, so we reset state to NON_INITIALIZED to allow
-                    // retries (eg if the network connection is temporary unavailable)
-                    mCurrentState = CustomTypes.RepositoryState.NON_INITIALIZED;
-                }
+            if (mPlayingQueue != null && mPlayingQueue.size() > 0) {
+                mCurrentState = CustomTypes.RepositoryState.INITIALIZED;
             }
+
+        } finally {
+            if (!mCurrentState.equals(RepositoryState.INITIALIZED)) {
+                // Something bad happened, so we reset state to NON_INITIALIZED to allow
+                // retries (eg if the network connection is temporary unavailable)
+                mCurrentState = CustomTypes.RepositoryState.NON_INITIALIZED;
+            }
+        }
+
+        return mCurrentState.equals(RepositoryState.INITIALIZED);
+
     }
 
     public void clearCachedAudioPlaylist(Context context) {
@@ -160,6 +165,10 @@ public class QueueRepository {
         editor.apply();
     }
 
+    public boolean isCatchEmpty(Context context) {
+        return getmPreferences(context).contains(KEY_PLAYING_QUEUE);
+    }
+
     private SharedPreferences getmPreferences(Context context) {
 
         if (mPreferences == null)
@@ -168,9 +177,64 @@ public class QueueRepository {
         return mPreferences;
     }
 
+    public Audio getCurrentMusic() {
+        return mCurrentState.equals(RepositoryState.INITIALIZED) ?
+                mPlayingQueue.get(mCurrentTrackIndex)
+                : null;
+    }
 
-    public interface QueueRepositoryCallback {
+    public void setCurrentQueueItem(Audio audioItem) {
+        if (mPlayingQueue != null)
+            mCurrentTrackIndex = mPlayingQueue.indexOf(audioItem);
 
-        void onMusicCatalogReady(boolean success);
+        notifyCurrentItemIndexChangedObservers();
+    }
+
+    public boolean skipQueuePosition(int amount) {
+        int index = mCurrentTrackIndex + amount;
+        if (index < 0) {
+            // skip backwards before the first song will keep you on the first song
+            index = 0;
+        } else {
+            // skip forwards when in last song will cycle back to start of the queue
+            index %= mPlayingQueue.size();
+        }
+        if (mPlayingQueue != null && index >= 0 && index < mPlayingQueue.size()) {
+            LogHelper.e(LOG_TAG, "Cannot increment queue index by ", amount,
+                    ". Current=", mCurrentTrackIndex, " queue length=", mPlayingQueue.size());
+            return false;
+        }
+        mCurrentTrackIndex = index;
+        notifyCurrentItemIndexChangedObservers();
+        return true;
+    }
+
+    public void addCurrentItemIndexChangedObserver(CurrentItemIndexChangedObserver observer) {
+        if (mCurrentItemIndexChangedObserverList == null)
+            mCurrentItemIndexChangedObserverList = new ArrayList<>();
+
+        if (!mCurrentItemIndexChangedObserverList.contains(observer))
+            mCurrentItemIndexChangedObserverList.add(observer);
+    }
+
+    public void removeCurrentItemIndexChangedObserver(CurrentItemIndexChangedObserver observer) {
+        if (mCurrentItemIndexChangedObserverList != null)
+            mCurrentItemIndexChangedObserverList.remove(observer);
+    }
+
+    private void notifyCurrentItemIndexChangedObservers() {
+        for (CurrentItemIndexChangedObserver observers :
+                mCurrentItemIndexChangedObserverList) {
+            if (observers != null)
+                observers.onQueueIndexChanged();
+        }
+    }
+
+    public interface QueueRepositoryInitializedCallback {
+        void onPlayingQueueReady(boolean success);
+    }
+
+    public interface CurrentItemIndexChangedObserver {
+        void onQueueIndexChanged();
     }
 }

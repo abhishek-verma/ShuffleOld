@@ -72,12 +72,12 @@ public class MainPresenter implements MainScreenContract.ActivityActionsListener
         // initialize queueRepo
         QueueRepository queueRepository = QueueRepository.getInstance();
         queueRepository.initializeQueue(mSelectedItemsRepository.getmItemType(),
-                selectorItems, context, new QueueRepository.QueueRepositoryCallback() {
+                selectorItems, context, new QueueRepository.QueueRepositoryInitializedCallback() {
                     @Override
-                    public void onMusicCatalogReady(boolean success) {
+                    public void onPlayingQueueReady(boolean success) {
 
                         if (success) {
-                            LogHelper.v(LOG_TAG, "onMusicCatalogReady! starting player activity.");
+                            LogHelper.v(LOG_TAG, "onPlayingQueueReady! starting player activity.");
                             //TODO start player activity
                             context.startActivity(new Intent(context, PlayerActivity.class));
                         } else {

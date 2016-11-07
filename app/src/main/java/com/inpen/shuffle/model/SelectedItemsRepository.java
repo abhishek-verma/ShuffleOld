@@ -28,8 +28,8 @@ public class SelectedItemsRepository {
     public CustomTypes.ItemType mItemType;
     private SharedPreferences mPreferences;
     private List<Item> mSelectedItemList = new ArrayList<>();
-    private List<ItemTypeObserver> mItemTypeObserverList = new ArrayList<>();
-    private List<IsRepositoryEmptyObserver> mIsRepositoryEmptyObserverList = new ArrayList<>();
+    private List<ItemTypeObserver> mItemTypeObserverList;
+    private List<IsRepositoryEmptyObserver> mIsRepositoryEmptyObserverList;
 
     public static SelectedItemsRepository getInstance() {
 
@@ -86,9 +86,7 @@ public class SelectedItemsRepository {
         LogHelper.v(LOG_TAG, "clearData()");
         mSelectedItemList.clear();
 
-        for (IsRepositoryEmptyObserver observer : mIsRepositoryEmptyObserverList) {
-            observer.onEmptyStateChanged(true);
-        }
+        notifyIsRepositoryEmptyObservers(true);
 
         getmPreferences(context).edit().clear().apply();
 
@@ -109,9 +107,7 @@ public class SelectedItemsRepository {
 
         if (mSelectedItemList.size() == 0) {
             LogHelper.d("SelectedItemRepository 1st item being inserted of type: " + mItemType);
-            for (IsRepositoryEmptyObserver observer : mIsRepositoryEmptyObserverList) {
-                observer.onEmptyStateChanged(false);
-            }
+            notifyIsRepositoryEmptyObservers(false);
         }
 
         for (Item item : items) {
@@ -126,9 +122,7 @@ public class SelectedItemsRepository {
         LogHelper.v(LOG_TAG, "addItem( " + item.toString() + " )");
         if (mSelectedItemList.size() == 0) {
             LogHelper.d("SelectedItemRepository 1st item being inserted of type: " + mItemType);
-            for (IsRepositoryEmptyObserver observer : mIsRepositoryEmptyObserverList) {
-                observer.onEmptyStateChanged(false);
-            }
+            notifyIsRepositoryEmptyObservers(false);
         }
 
         mSelectedItemList.add(item);
@@ -141,10 +135,7 @@ public class SelectedItemsRepository {
         mSelectedItemList.remove(item);
 
         if (mSelectedItemList.size() == 0) {
-            LogHelper.d("SelectedItemRepository empty");
-            for (IsRepositoryEmptyObserver observer : mIsRepositoryEmptyObserverList) {
-                observer.onEmptyStateChanged(true);
-            }
+            notifyIsRepositoryEmptyObservers(true);
         }
 
         LogHelper.v(LOG_TAG, "mSelectedITemLIst.size() : " + mSelectedItemList.size());
@@ -158,12 +149,29 @@ public class SelectedItemsRepository {
         return mPreferences;
     }
 
+    private void notifyIsRepositoryEmptyObservers(boolean isEmpty) {
+        LogHelper.d("notifyIsRepositoryEmptyObservers isEmpty: " + isEmpty);
+        for (IsRepositoryEmptyObserver observer : mIsRepositoryEmptyObserverList) {
+            if (observer != null) {
+                observer.onEmptyStateChanged(isEmpty);
+            }
+        }
+    }
+
     public void addItemTypeObserver(ItemTypeObserver observer) {
-        mItemTypeObserverList.add(observer);
+        if (mItemTypeObserverList == null)
+            mItemTypeObserverList = new ArrayList<>();
+
+        if (!mItemTypeObserverList.contains(observer))
+            mItemTypeObserverList.add(observer);
     }
 
     public void addIsRepositoryEmptyObserver(IsRepositoryEmptyObserver observer) {
-        mIsRepositoryEmptyObserverList.add(observer);
+        if (mIsRepositoryEmptyObserverList == null)
+            mIsRepositoryEmptyObserverList = new ArrayList<>();
+
+        if (!mIsRepositoryEmptyObserverList.contains(observer))
+            mIsRepositoryEmptyObserverList.add(observer);
     }
 
     public interface ItemTypeObserver {

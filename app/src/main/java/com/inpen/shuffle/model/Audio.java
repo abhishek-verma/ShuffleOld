@@ -11,7 +11,7 @@ import java.io.Serializable;
  */
 public class Audio implements Serializable {
 
-    private String mPath;
+    private String mSourcePath;
     private String mTitle;
     private String mAlbum;
     private String mArtist;
@@ -20,7 +20,7 @@ public class Audio implements Serializable {
     private String mSongID;
 
     public Audio(String songId, String path, String title, String album, String artist, String albumArt, long duration) {
-        this.mPath = path;
+        this.mSourcePath = path;
         this.mTitle = title;
         this.mAlbum = album;
         this.mArtist = artist;
@@ -40,12 +40,12 @@ public class Audio implements Serializable {
                 .toString();
     }
 
-    public String getmPath() {
-        return mPath;
+    public String getmSourcePath() {
+        return mSourcePath;
     }
 
-    public void setmPath(String mPath) {
-        this.mPath = mPath;
+    public void setmSourcePath(String mSourcePath) {
+        this.mSourcePath = mSourcePath;
     }
 
     public String getmTitle() {

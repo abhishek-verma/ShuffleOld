@@ -35,6 +35,13 @@
             android:name=".playback.MediaPlayerService"
             android:enabled="true"
             android:exported="true"></service>
+
+        <service
+            android:name=".playback.MusicService"
+            android:enabled="true"
+            android:exported="true">
+
+        </service>
     </application>
 
 </manifest>

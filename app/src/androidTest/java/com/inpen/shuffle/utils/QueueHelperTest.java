@@ -16,6 +16,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Vector;
 
@@ -102,34 +103,36 @@ public class QueueHelperTest {
 
         QueueHelper qh = new QueueHelper(mContext);
 
+        List<Audio> audioList;
+
         // Retrieving all songs
-        List<Audio> audioList = qh.generateQueue(QueueHelper.MediaSelectorType.NONE,
-                null);
-        Log.i(LOG_TAG, "all songs: " + audioList.toString());
-        assertTrue(audioList.size() == 4);
+//        audioList = qh.generateQueue(CustomTypes.ItemType,
+//                null);
+//        Log.i(LOG_TAG, "all songs: " + audioList.toString());
+//        assertTrue(audioList.size() == 4);
 
         // Retrieving all songs for album
-        audioList = qh.generateQueue(QueueHelper.MediaSelectorType.ALBUM_ID,
-                new String[]{"101", "102"});
+        audioList = qh.generateQueue(CustomTypes.ItemType.ALBUM_ID,
+                Arrays.asList("101", "102"));
         Log.i(LOG_TAG, "all songs for albumId: " + audioList.toString());
         assertTrue("Expected Size: 2, Actual size: " + audioList.size(), audioList.size() == 2);
 
         // Retrieving all songs for artist
-        audioList = qh.generateQueue(QueueHelper.MediaSelectorType.ARTIST_ID,
-                new String[]{"101", "102"});
+        audioList = qh.generateQueue(CustomTypes.ItemType.ARTIST_ID,
+                Arrays.asList("101", "102"));
         Log.i(LOG_TAG, "all songs for artistId: " + audioList.toString());
         assertTrue(audioList.size() == 2);
 
 //         Retrieving all songs for playlist
-        audioList = qh.generateQueue(QueueHelper.MediaSelectorType.PLAYLIST,
-                new String[]{"playlistName1", "playlistName2"});
+        audioList = qh.generateQueue(CustomTypes.ItemType.PLAYLIST,
+                Arrays.asList("playlistName1", "playlistName2"));
         Log.i(LOG_TAG, "all songs playlist: " + audioList.toString());
         assertTrue("Expected size: 2, Actual size: " + audioList.size(),
                 audioList.size() == 2);
 
         // Retrieving all songs for path
-        audioList = qh.generateQueue(QueueHelper.MediaSelectorType.PATH,
-                new String[]{"testPath/subpath1", "testPath/subpath2"});
+        audioList = qh.generateQueue(CustomTypes.ItemType.FOLDER,
+                Arrays.asList("testPath/subpath1", "testPath/subpath2"));
         Log.i(LOG_TAG, "all songs for path: " + audioList.toString());
         assertTrue(audioList.size() == 2);
     }

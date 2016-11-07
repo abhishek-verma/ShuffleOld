@@ -5,5 +5,9 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="action_settings">Settings</string>
+    <string name="label_next">NEXT</string>
+    <string name="label_pause">PAUSE</string>
+    <string name="label_play">PLAY</string>
+    <string name="label_previous">PREVIOUS</string>
 
 </resources>
