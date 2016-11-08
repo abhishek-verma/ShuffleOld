@@ -78,8 +78,10 @@ public class MainPresenter implements MainScreenContract.ActivityActionsListener
 
                         if (success) {
                             LogHelper.v(LOG_TAG, "onPlayingQueueReady! starting player activity.");
-                            //TODO start player activity
-                            context.startActivity(new Intent(context, PlayerActivity.class));
+                            //Starting player activity
+                            Intent playerActivityIntent = new Intent(context, PlayerActivity.class);
+                            playerActivityIntent.putExtra(PlayerActivity.EXTRA_BOOLEAN_NEW_LAUNCH, true);
+                            context.startActivity(playerActivityIntent);
                         } else {
                             LogHelper.e(LOG_TAG, "Something wrong happened while curating queue!");
                         }

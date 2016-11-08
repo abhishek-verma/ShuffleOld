@@ -44,7 +44,7 @@ public class TestDb {
     SQLiteDatabase mDb;
     Context mContext;
 
-    // Since we want each test to start with a clean slate
+    // Since we want each test to play with a clean slate
     private void deleteTheDatabase() {
         getTargetContext().deleteDatabase(MediaDbHelper.DATABASE_NAME);
     }

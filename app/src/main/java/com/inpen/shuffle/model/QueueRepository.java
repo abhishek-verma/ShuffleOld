@@ -190,23 +190,17 @@ public class QueueRepository {
         notifyCurrentItemIndexChangedObservers();
     }
 
-    public boolean skipQueuePosition(int amount) {
+    public void skipQueuePosition(int amount) {
         int index = mCurrentTrackIndex + amount;
         if (index < 0) {
             // skip backwards before the first song will keep you on the first song
             index = 0;
         } else {
-            // skip forwards when in last song will cycle back to start of the queue
+            // skip forwards when in last song will cycle back to play of the queue
             index %= mPlayingQueue.size();
-        }
-        if (mPlayingQueue != null && index >= 0 && index < mPlayingQueue.size()) {
-            LogHelper.e(LOG_TAG, "Cannot increment queue index by ", amount,
-                    ". Current=", mCurrentTrackIndex, " queue length=", mPlayingQueue.size());
-            return false;
         }
         mCurrentTrackIndex = index;
         notifyCurrentItemIndexChangedObservers();
-        return true;
     }
 
     public void addCurrentItemIndexChangedObserver(CurrentItemIndexChangedObserver observer) {
@@ -223,6 +217,9 @@ public class QueueRepository {
     }
 
     private void notifyCurrentItemIndexChangedObservers() {
+        if (mCurrentItemIndexChangedObserverList == null)
+            return;
+
         for (CurrentItemIndexChangedObserver observers :
                 mCurrentItemIndexChangedObserverList) {
             if (observers != null)

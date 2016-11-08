@@ -97,9 +97,7 @@ public class SelectedItemsRepository {
         LogHelper.v(LOG_TAG, "setItemType( " + itemType.toString() + " )");
         mItemType = itemType;
 
-        for (ItemTypeObserver observer : mItemTypeObserverList) {
-            observer.onItemTypeChanged(itemType);
-        }
+        notifyItemTypeChangedObservers();
     }
 
     public void addItems(List<Item> items) {
@@ -149,8 +147,21 @@ public class SelectedItemsRepository {
         return mPreferences;
     }
 
+    private void notifyItemTypeChangedObservers() {
+        if (mItemTypeObserverList == null)
+            return;
+
+        for (ItemTypeObserver observer : mItemTypeObserverList) {
+            if (observer != null)
+                observer.onItemTypeChanged(mItemType);
+        }
+    }
+
     private void notifyIsRepositoryEmptyObservers(boolean isEmpty) {
         LogHelper.d("notifyIsRepositoryEmptyObservers isEmpty: " + isEmpty);
+        if (mIsRepositoryEmptyObserverList == null)
+            return;
+
         for (IsRepositoryEmptyObserver observer : mIsRepositoryEmptyObserverList) {
             if (observer != null) {
                 observer.onEmptyStateChanged(isEmpty);

@@ -1,220 +1,299 @@
-/*
-* Copyright (C) 2014 The Android Open Source Project
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-*      http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
-
 package com.inpen.shuffle.playback;
 
+/**
+ * Created by Abhishek on 11/7/2016.
+ */
+
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
-import android.os.Handler;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
+import android.os.Binder;
 import android.os.IBinder;
-import android.os.Message;
-import android.os.RemoteException;
-import android.support.annotation.Nullable;
-import android.support.v4.media.session.MediaButtonReceiver;
-import android.support.v4.media.session.MediaSessionCompat;
-import android.support.v4.media.session.PlaybackStateCompat;
+import android.support.v4.app.NotificationCompat.Action;
+import android.support.v4.app.TaskStackBuilder;
+import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.app.NotificationCompat;
 
+import com.inpen.shuffle.R;
+import com.inpen.shuffle.mainscreen.MainActivity;
+import com.inpen.shuffle.model.Audio;
 import com.inpen.shuffle.model.QueueRepository;
 import com.inpen.shuffle.playerscreen.PlayerActivity;
 import com.inpen.shuffle.utils.LogHelper;
+import com.squareup.picasso.Picasso;
 
-import java.lang.ref.WeakReference;
+import java.io.IOException;
+import java.util.concurrent.ExecutionException;
 
-public class MusicService extends Service implements
-        PlaybackManager.PlaybackServiceCallback {
+/**
+ * Created by Matteo on 11/06/2015.
+ */
+public class MusicService extends Service implements Playback.Callback {
 
-    // The action of the incoming Intent indicating that it contains a command
-    // to be executed (see {@link #onStartCommand})
-    public static final String ACTION_CMD = "com.example.android.uamp.ACTION_CMD";
-    // The key in the extras of the incoming Intent indicating the command that
-    // should be executed (see {@link #onStartCommand})
-    public static final String CMD_NAME = "CMD_NAME";
-    // A value of a CMD_NAME key in the extras of the incoming Intent that
-    // indicates that the music playback should be paused (see {@link #onStartCommand})
-    public static final String CMD_PAUSE = "CMD_PAUSE";
-    private static final String TAG = LogHelper.makeLogTag(MusicService.class);
-    // Delay stopSelf by using a handler.
-    private static final int STOP_DELAY = 30000;
-
-
-    private final DelayedStopHandler mDelayedStopHandler = new DelayedStopHandler(this);
+    public static final String BROADCAST_CURRENT_SONG_CHANGED = "CURRENT_SONG_CHANGED";
+    public static final String BROADCAST_PLAYBACK_STATE_CHANGED = "PLAYBACK_STATE_CHANGED";
+    public static final String BROADCAST_EXTRA_PLAYBACK_STATE_KEY = "PLAYBACK_STATE";
+    public static final String INTENT_ACTION_PLAY = "ACTION_PLAY";
+    public static final String INTENT_ACTION_PAUSE = "ACTION_PAUSE";
+    public static final String INTENT_ACTION_NEXT = "ACTION_NEXT";
+    public static final String INTENT_ACTION_PREV = "ACTION_PREV";
+    public static final String INTENT_ACTION_STOP = "ACTION_STOP";
+    private static final String LOG_TAG = LogHelper.makeLogTag(MusicService.class);
+    private static final int NOTIFICATION_ID = 1;
+    private final IBinder mMusicBinder = new MusicBinder();
     private QueueRepository mQueueRepository;
-    private PlaybackManager mPlaybackManager;
-    private MediaSessionCompat mSession;
-    private MediaNotificationManager mMediaNotificationManager;
-    private Bundle mSessionExtras;
+    private Playback mPlayback;
 
-    @Nullable
-    @Override
-    public IBinder onBind(Intent intent) {
-        return null;
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see android.app.Service#onCreate()
-     */
     @Override
     public void onCreate() {
         super.onCreate();
-        LogHelper.d(TAG, "onCreate");
-
         mQueueRepository = QueueRepository.getInstance();
+        mQueueRepository.loadQueue(this);
 
-        LocalPlayback playback = new LocalPlayback(this);
-        mPlaybackManager = new PlaybackManager(this, getResources(), mQueueRepository,
-                playback, this);
+        mPlayback = new Playback(this);
+        mPlayback.setCallback(this);
 
-        // Start a new MediaSession
-        mSession = new MediaSessionCompat(this, "MusicService");
-        mSession.setCallback(mPlaybackManager.getMediaSessionCallback());
-        mSession.setFlags(MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS |
-                MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
-
-        Context context = getApplicationContext();
-        Intent intent = new Intent(context, PlayerActivity.class);
-        PendingIntent pi = PendingIntent.getActivity(context, 99 /*request code*/,
-                intent, PendingIntent.FLAG_UPDATE_CURRENT);
-        mSession.setSessionActivity(pi);
-
-        mPlaybackManager.updatePlaybackState(null);
-
-        try {
-            mMediaNotificationManager = new MediaNotificationManager(this);
-        } catch (RemoteException e) {
-            throw new IllegalStateException("Could not create a MediaNotificationManager", e);
-        }
     }
 
-    /**
-     * (non-Javadoc)
-     *
-     * @see android.app.Service#onStartCommand(android.content.Intent, int, int)
-     */
     @Override
-    public int onStartCommand(Intent startIntent, int flags, int startId) {
-        if (startIntent != null) {
-            String action = startIntent.getAction();
-            String command = startIntent.getStringExtra(CMD_NAME);
-            if (ACTION_CMD.equals(action)) {
-                if (CMD_PAUSE.equals(command)) {
-                    mPlaybackManager.handlePauseRequest();
-                }
-            } else {
-                // Try to handle the intent as a media button event wrapped by MediaButtonReceiver
-                MediaButtonReceiver.handleIntent(mSession, startIntent);
-            }
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        if (intent != null && intent.getAction() != null) {
+            handleIntent(intent);
         }
-
-
-//        boolean queueNotEmpty = mQueueRepository.loadQueue(this);
-//        if (queueNotEmpty) {
-//            mPlaybackManager.handlePlayRequest();
-//        } else
-//            stopSelf();
-
-        // Reset the delay handler to enqueue a message to stop the service if
-        // nothing is playing.
-        mDelayedStopHandler.removeCallbacksAndMessages(null);
-        mDelayedStopHandler.sendEmptyMessageDelayed(0, STOP_DELAY);
         return START_STICKY;
     }
 
-    /**
-     * (non-Javadoc)
-     *
-     * @see android.app.Service#onDestroy()
-     */
     @Override
     public void onDestroy() {
-        LogHelper.d(TAG, "onDestroy");
-        // Service is being killed, so make sure we release our resources
-        mPlaybackManager.handleStopRequest(null);
-        mMediaNotificationManager.stopNotification();
-
-        mDelayedStopHandler.removeCallbacksAndMessages(null);
-        mSession.release();
+        mPlayback.stop(true);
+        super.onDestroy();
     }
 
+    private void handleIntent(Intent intent) {
+        switch (intent.getAction()) {
+            case INTENT_ACTION_PLAY:
+                play();
+                break;
+            case INTENT_ACTION_PAUSE:
+                pause();
+                break;
+            case INTENT_ACTION_PREV:
+                playPrev();
+                break;
+            case INTENT_ACTION_NEXT:
+                playNext();
+                break;
+            case INTENT_ACTION_STOP:
+                stop();
+                break;
+        }
+    }
 
-    /**
-     * Callback method called from PlaybackManager whenever the music is about to play.
-     */
-    @Override
-    public void onPlaybackStart() {
-        if (!mSession.isActive()) {
-            mSession.setActive(true);
+    ///////////////////////////////////////////////////////////////////////////
+    // Playback control methods
+    ///////////////////////////////////////////////////////////////////////////
+
+    public void play() {
+        Audio currentMusic = mQueueRepository.getCurrentMusic();
+
+        if (currentMusic != null) {
+            mPlayback.play(currentMusic);
         }
 
-        mDelayedStopHandler.removeCallbacksAndMessages(null);
-
-        // The service needs to continue running even after the bound client (usually a
-        // MediaController) disconnects, otherwise the music playback will stop.
-        // Calling startService(Intent) will keep the service running until it is explicitly killed.
-        startService(new Intent(getApplicationContext(), MusicService.class));
+        buildNotification();
     }
 
-
-    /**
-     * Callback method called from PlaybackManager whenever the music stops playing.
-     */
-    @Override
-    public void onPlaybackStop() {
-        // Reset the delayed stop handler, so after STOP_DELAY it will be executed again,
-        // potentially stopping the service.
-        mDelayedStopHandler.removeCallbacksAndMessages(null);
-        mDelayedStopHandler.sendEmptyMessageDelayed(0, STOP_DELAY);
-        stopForeground(true);
-    }
-
-    @Override
-    public void onNotificationRequired() {
-        mMediaNotificationManager.startNotification();
-    }
-
-    @Override
-    public void onPlaybackStateUpdated(PlaybackStateCompat newState) {
-        mSession.setPlaybackState(newState);
-    }
-
-
-    /**
-     * A simple handler that stops the service if playback is not active (playing)
-     */
-    private static class DelayedStopHandler extends Handler {
-        private final WeakReference<MusicService> mWeakReference;
-
-        private DelayedStopHandler(MusicService service) {
-            mWeakReference = new WeakReference<>(service);
+    public void pause() {
+        if (mPlayback.isPlaying()) {
+            mPlayback.pause();
         }
 
-        @Override
-        public void handleMessage(Message msg) {
-            MusicService service = mWeakReference.get();
-            if (service != null && service.mPlaybackManager.getPlayback() != null) {
-                if (service.mPlaybackManager.getPlayback().isPlaying()) {
-                    LogHelper.d(TAG, "Ignoring delayed stop since the media player is in use.");
-                    return;
-                }
-                LogHelper.d(TAG, "Stopping service with delay handler.");
-                service.stopSelf();
+        buildNotification();
+    }
+
+    public boolean isPlaying() {
+        return mPlayback.isPlaying();
+    }
+
+    public void seekTo(int position) {
+        mPlayback.seekTo(position);
+    }
+
+
+    public void playPrev() {
+        mQueueRepository.skipQueuePosition(-1);
+        play();
+    }
+
+    public void playNext() {
+        mQueueRepository.skipQueuePosition(+1);
+        play();
+    }
+
+    public void stop() {
+        NotificationManager notificationManager =
+                (NotificationManager) getApplicationContext()
+                        .getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.cancel(1);
+        mPlayback.pause();
+    }
+
+    public int getState() {
+        return mPlayback.getState();
+    }
+
+    private void buildNotification() {
+        // http://stackoverflow.com/questions/24465587/change-notifications-action-icon-dynamically
+
+        // Initializing the media style (no text on notification buttons)
+        NotificationCompat.MediaStyle mediaStyle = new NotificationCompat.MediaStyle();
+
+        // Building the notification settings
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
+
+        builder.setVisibility(Notification.VISIBILITY_PUBLIC);
+        builder.setSmallIcon(R.drawable.ic_shuffle);
+        builder.setContentTitle(mQueueRepository.getCurrentMusic().getmTitle());
+        builder.setContentText(mQueueRepository.getCurrentMusic().getmArtist());
+        builder.setLargeIcon(getLargeIcon());
+        builder.setShowWhen(false);
+        builder.setStyle(mediaStyle);
+
+        // Setting the notification default intent (starting MainActivity)
+        Intent resultIntent = new Intent(getApplicationContext(), PlayerActivity.class);
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(getApplicationContext());
+        stackBuilder.addParentStack(MainActivity.class);
+        stackBuilder.addNextIntent(resultIntent);
+        PendingIntent resultPendingIntent = stackBuilder.
+                getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+        builder.setContentIntent(resultPendingIntent);
+
+        // Adding the notification controls actions
+        builder.addAction(createAction
+                (R.drawable.ic_skip_prev, "Previous", INTENT_ACTION_PREV));
+        if (isPlaying()) {
+            builder.addAction(createAction
+                    (R.drawable.ic_pause, "Pause", INTENT_ACTION_PAUSE));
+        } else {
+            builder.addAction(createAction
+                    (R.drawable.ic_play, "Play", INTENT_ACTION_PLAY));
+        }
+        builder.addAction(createAction
+                (R.drawable.ic_skip_next, "Next", INTENT_ACTION_NEXT));
+
+        // Setting the notification delete intent
+        Intent stopIntent = new Intent(getApplicationContext(), MusicService.class);
+        stopIntent.setAction(INTENT_ACTION_STOP);
+        PendingIntent deleteIntent = PendingIntent.
+                getService(getApplicationContext(), 1, stopIntent, 0);
+        builder.setDeleteIntent(deleteIntent);
+
+        // Setting the lock screen notification
+        mediaStyle.setShowActionsInCompactView(1, 2);
+
+        // Setting the notification manager
+        NotificationManager notificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.notify(NOTIFICATION_ID, builder.build());
+    }
+
+    // Getting the bitmap from Picasso
+    // http://stackoverflow.com/questions/26888247/easiest-way-to-use-picasso-in-notification-icon
+    private Bitmap getLargeIcon() {
+        Bitmap bitmap = null;
+        try {
+            try {
+                bitmap = new AsyncTask<Void, Void, Bitmap>() {
+                    @Override
+                    protected Bitmap doInBackground(Void... params) {
+                        try {
+                            return Picasso.with(getApplicationContext())
+                                    .load(mQueueRepository.getCurrentMusic().getmAlbumArt())
+                                    .resize(200, 200)
+                                    .placeholder(R.drawable.ic_shuffle)
+                                    .error(R.drawable.ic_shuffle)
+                                    .get();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        return null;
+                    }
+                }.execute().get();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
             }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        if (bitmap != null) {
+            return bitmap;
+        } else {
+            return BitmapFactory.
+                    decodeResource(getResources(), R.drawable.ic_shuffle);
+        }
+    }
+
+    private Action createAction(int icon, String title, String intentAction) {
+        Intent intent = new Intent(getApplicationContext(), MusicService.class);
+        intent.setAction(intentAction);
+        PendingIntent pendingIntent =
+                PendingIntent.getService(getApplicationContext(), NOTIFICATION_ID, intent, 0);
+        return new Action.Builder(icon, title, pendingIntent).build();
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+    // Callbacks from Playback class
+    ///////////////////////////////////////////////////////////////////////////
+
+    @Override
+    public void onCompletion() {
+        playNext();
+    }
+
+    @Override
+    public void onPlaybackStatusChanged(int state) {
+        Intent intent = new Intent(BROADCAST_PLAYBACK_STATE_CHANGED);
+        intent.putExtra(BROADCAST_EXTRA_PLAYBACK_STATE_KEY, mPlayback.getState());
+        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+    }
+
+    @Override
+    public void onError(String error) {
+
+    }
+
+    @Override
+    public void setCurrentMediaId(String mediaId) {
+
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+    // Binding related
+    ///////////////////////////////////////////////////////////////////////////
+
+    @Override
+    public IBinder onBind(Intent intent) {
+        return mMusicBinder;
+    }
+
+    @Override
+    public boolean onUnbind(Intent intent) {
+        return true;
+    }
+
+    /*
+     * Binding settings
+     */
+    public class MusicBinder extends Binder {
+        public MusicService getService() {
+            return MusicService.this;
         }
     }
 

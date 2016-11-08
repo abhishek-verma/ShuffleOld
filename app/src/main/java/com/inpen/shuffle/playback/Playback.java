@@ -23,12 +23,10 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.wifi.WifiManager;
 import android.os.PowerManager;
-import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 
 import com.inpen.shuffle.model.Audio;
 import com.inpen.shuffle.utils.LogHelper;
-import com.inpen.shuffle.utils.MediaHelper;
 
 import java.io.IOException;
 
@@ -40,7 +38,7 @@ import static android.media.MediaPlayer.OnSeekCompleteListener;
 /**
  * A class that implements local media playback using {@link android.media.MediaPlayer}
  */
-public class LocalPlayback implements AudioManager.OnAudioFocusChangeListener,
+public class Playback implements AudioManager.OnAudioFocusChangeListener,
         OnCompletionListener, OnErrorListener, OnPreparedListener, OnSeekCompleteListener {
 
     // The volume we set the media player to when we lose audio focus, but are
@@ -48,7 +46,7 @@ public class LocalPlayback implements AudioManager.OnAudioFocusChangeListener,
     public static final float VOLUME_DUCK = 0.2f;
     // The volume we set the media player when we have audio focus.
     public static final float VOLUME_NORMAL = 1.0f;
-    private static final String TAG = LogHelper.makeLogTag(LocalPlayback.class);
+    private static final String TAG = LogHelper.makeLogTag(Playback.class);
     // we don't have audio focus, and can't duck (play at a low volume)
     private static final int AUDIO_NO_FOCUS_NO_DUCK = 0;
     // we don't have focus, but can duck (play at a low volume)
@@ -76,25 +74,22 @@ public class LocalPlayback implements AudioManager.OnAudioFocusChangeListener,
             if (AudioManager.ACTION_AUDIO_BECOMING_NOISY.equals(intent.getAction())) {
                 LogHelper.d(TAG, "Headphones disconnected.");
                 if (isPlaying()) {
-                    Intent i = new Intent(context, MusicService.class);
-                    i.setAction(MusicService.ACTION_CMD);
-                    i.putExtra(MusicService.CMD_NAME, MusicService.CMD_PAUSE);
+                    Intent i = new Intent(context, MusicServiceUnused.class);
+                    i.setAction(MusicServiceUnused.ACTION_CMD);
+                    i.putExtra(MusicServiceUnused.CMD_NAME, MusicServiceUnused.CMD_PAUSE);
                     mContext.startService(i);
                 }
             }
         }
     };
 
-    public LocalPlayback(Context context) {
+    public Playback(Context context) {
         this.mContext = context;
         this.mAudioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
         // Create the Wifi lock (this does not acquire the lock, this just creates it)
         this.mWifiLock = ((WifiManager) context.getSystemService(Context.WIFI_SERVICE))
                 .createWifiLock(WifiManager.WIFI_MODE_FULL, "uAmp_lock");
         this.mState = PlaybackStateCompat.STATE_NONE;
-    }
-
-    public void start() {
     }
 
     public void stop(boolean notifyListeners) {
@@ -142,7 +137,6 @@ public class LocalPlayback implements AudioManager.OnAudioFocusChangeListener,
     }
 
     public void play(Audio audioItem) {
-        mPlayOnFocusGain = true;
         tryToGetAudioFocus();
         registerAudioNoisyReceiver();
         boolean mediaHasChanged = mAudioItem == null || !mAudioItem.equals(audioItem);
@@ -151,12 +145,18 @@ public class LocalPlayback implements AudioManager.OnAudioFocusChangeListener,
             mAudioItem = audioItem;
         }
 
+        //Ignore method call is play() is called for same audio multiple time when playing
+        if (!mediaHasChanged && isPlaying()) {
+            return;
+        }
+
+        mPlayOnFocusGain = true;
+
         if (mState == PlaybackStateCompat.STATE_PAUSED && !mediaHasChanged && mMediaPlayer != null) {
             configMediaPlayerState();
         } else {
             mState = PlaybackStateCompat.STATE_STOPPED;
             relaxResources(false); // release everything except MediaPlayer
-            MediaMetadataCompat track = MediaHelper.getMetaDataForAudio(mAudioItem);
 
             //noinspection ResourceType
             String source = mAudioItem.getmSourcePath();
@@ -173,7 +173,7 @@ public class LocalPlayback implements AudioManager.OnAudioFocusChangeListener,
                 // it's done, it will call our OnPreparedListener (that is,
                 // the onPrepared() method on this class, since we set the
                 // listener to 'this'). Until the media player is prepared,
-                // we *cannot* call start() on it!
+                // we *cannot* call play() on it!
                 mMediaPlayer.prepareAsync();
 
                 // If we are streaming from the internet, we want to hold a
@@ -195,6 +195,7 @@ public class LocalPlayback implements AudioManager.OnAudioFocusChangeListener,
     }
 
     public void pause() {
+//        mPlayOnFocusGain = false; placeholder, remove comment when necessary
         if (mState == PlaybackStateCompat.STATE_PLAYING) {
             // Pause media player and cancel the 'foreground service' state.
             if (mMediaPlayer != null && mMediaPlayer.isPlaying()) {
@@ -372,7 +373,7 @@ public class LocalPlayback implements AudioManager.OnAudioFocusChangeListener,
     public void onCompletion(MediaPlayer player) {
         LogHelper.d(TAG, "onCompletion from MediaPlayer");
         // The media player finished playing the current song, so we go ahead
-        // and start the next.
+        // and play the next.
         if (mCallback != null) {
             mCallback.onCompletion();
         }
@@ -386,7 +387,7 @@ public class LocalPlayback implements AudioManager.OnAudioFocusChangeListener,
     @Override
     public void onPrepared(MediaPlayer player) {
         LogHelper.d(TAG, "onPrepared from MediaPlayer");
-        // The media player is done preparing. That means we can start playing if we
+        // The media player is done preparing. That means we can play playing if we
         // have audio focus.
         configMediaPlayerState();
     }

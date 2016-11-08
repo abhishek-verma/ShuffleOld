@@ -39,6 +39,8 @@ import com.inpen.shuffle.playerscreen.PlayerActivity;
 import com.inpen.shuffle.utils.LogHelper;
 import com.inpen.shuffle.utils.ResourceHelper;
 
+
+// The class is kept for future implementations
 /**
  * Keeps track of a notification and updates it automatically for a given
  * MediaSession. Maintaining a visible notification (usually) guarantees that the music service
@@ -52,7 +54,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
     private static final String TAG = LogHelper.makeLogTag(MediaNotificationManager.class);
     private static final int NOTIFICATION_ID = 412;
     private static final int REQUEST_CODE = 100;
-    private final MusicService mService;
+    private final MusicServiceUnused mService;
     private final NotificationManagerCompat mNotificationManager;
     private final PendingIntent mPauseIntent;
     private final PendingIntent mPlayIntent;
@@ -94,7 +96,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
 
     };
 
-    public MediaNotificationManager(MusicService service) throws RemoteException {
+    public MediaNotificationManager(MusicServiceUnused service) throws RemoteException {
         mService = service;
 
         mNotificationColor = ResourceHelper.getThemeColor(mService, R.attr.colorPrimary,

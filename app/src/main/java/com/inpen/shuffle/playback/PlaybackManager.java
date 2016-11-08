@@ -26,10 +26,11 @@ import com.inpen.shuffle.model.Audio;
 import com.inpen.shuffle.model.QueueRepository;
 import com.inpen.shuffle.utils.LogHelper;
 
+// The class is kept for future implementations
 /**
  * Manage the interactions among the container service, the queue manager and the actual playback.
  */
-public class PlaybackManager implements LocalPlayback.Callback {
+public class PlaybackManager implements Playback.Callback {
 
     private static final String TAG = LogHelper.makeLogTag(PlaybackManager.class);
     // Action to thumbs up a media item
@@ -37,13 +38,13 @@ public class PlaybackManager implements LocalPlayback.Callback {
 
     private QueueRepository mQueueRepository;
     private Resources mResources;
-    private LocalPlayback mPlayback;
+    private Playback mPlayback;
     private PlaybackServiceCallback mServiceCallback;
     private MediaSessionCallback mMediaSessionCallback;
 
     public PlaybackManager(PlaybackServiceCallback serviceCallback, Resources resources,
                            QueueRepository queueRepository,
-                           LocalPlayback playback, Context context) {
+                           Playback playback, Context context) {
         mQueueRepository = queueRepository;
         mServiceCallback = serviceCallback;
         mResources = resources;
@@ -52,7 +53,7 @@ public class PlaybackManager implements LocalPlayback.Callback {
         mPlayback.setCallback(this);
     }
 
-    public LocalPlayback getPlayback() {
+    public Playback getPlayback() {
         return mPlayback;
     }
 
@@ -185,17 +186,17 @@ public class PlaybackManager implements LocalPlayback.Callback {
      */
     @Override
     public void onCompletion() {
-        // The media player finished playing the current song, so we go ahead
-        // and start the next.
-        if (mQueueRepository.skipQueuePosition(1)) {
-            handlePlayRequest();
-            //TODO Update metadata and tell music service that it's time to switch to next music
-            //Or better approach, add listener pattern inside QueueRepo and notify service and activity etc
-            //mQueueManager.updateMetadata();
-        } else {
-            // If skipping was not possible, we stop and release the resources:
-            handleStopRequest(null);
-        }
+//        // The media player finished playing the current song, so we go ahead
+//        // and play the next.
+//        if (mQueueRepository.skipQueuePosition(1)) {
+//            handlePlayRequest();
+//            //TODO Update metadata and tell music service that it's time to switch to next music
+//            //Or better approach, add listener pattern inside QueueRepo and notify service and activity etc
+//            //mQueueManager.updateMetadata();
+//        } else {
+//            // If skipping was not possible, we stop and release the resources:
+//            handleStopRequest(null);
+//        }
     }
 
     @Override
@@ -265,20 +266,20 @@ public class PlaybackManager implements LocalPlayback.Callback {
         @Override
         public void onSkipToNext() {
             LogHelper.d(TAG, "skipToNext");
-            if (mQueueRepository.skipQueuePosition(1)) {
-                handlePlayRequest();
-            } else {
-                handleStopRequest("Cannot skip");
-            }
+//            if (mQueueRepository.skipQueuePosition(1)) {
+//                handlePlayRequest();
+//            } else {
+//                handleStopRequest("Cannot skip");
+//            }
         }
 
         @Override
         public void onSkipToPrevious() {
-            if (mQueueRepository.skipQueuePosition(-1)) {
-                handlePlayRequest();
-            } else {
-                handleStopRequest("Cannot skip");
-            }
+//            if (mQueueRepository.skipQueuePosition(-1)) {
+//                handlePlayRequest();
+//            } else {
+//                handleStopRequest("Cannot skip");
+//            }
         }
 
 //        TODO implement this for like action
