@@ -56,7 +56,7 @@ public class SelectedItemsRepository {
         Gson gson = new Gson();
         String json = getmPreferences(context).getString(KEY_SELECTED_LIST, null);
 
-        Type type = new TypeToken<ArrayList<Audio>>() {
+        Type type = new TypeToken<ArrayList<AudioItem>>() {
         }.getType();
 
         mSelectedItemList = gson.fromJson(json, type);

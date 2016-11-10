@@ -22,7 +22,7 @@ import android.os.SystemClock;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 
-import com.inpen.shuffle.model.Audio;
+import com.inpen.shuffle.model.AudioItem;
 import com.inpen.shuffle.model.QueueRepository;
 import com.inpen.shuffle.utils.LogHelper;
 
@@ -66,7 +66,7 @@ public class PlaybackManager implements Playback.Callback {
      */
     public void handlePlayRequest() {
         LogHelper.d(TAG, "handlePlayRequest: mState=" + mPlayback.getState());
-        Audio currentMusic = mQueueRepository.getCurrentMusic();
+        AudioItem currentMusic = mQueueRepository.getCurrentMusic();
 
         if (currentMusic != null) {
             mServiceCallback.onPlaybackStart();
@@ -131,7 +131,7 @@ public class PlaybackManager implements Playback.Callback {
 
         // Set the activeQueueItemId if the current index is valid.
         // TODO implement when using lists for car or stuff
-//        Audio currentMusic = mQueueRepository.getCurrentMusic();
+//        AudioItem currentMusic = mQueueRepository.getCurrentMusic();
 //        if (currentMusic != null) {
 //            stateBuilder.setActiveQueueItemId(currentMusic.getQueueId());
 //        }
@@ -145,7 +145,7 @@ public class PlaybackManager implements Playback.Callback {
     }
 
     private void setCustomAction(PlaybackStateCompat.Builder stateBuilder) {
-        Audio currentMusic = mQueueRepository.getCurrentMusic();
+        AudioItem currentMusic = mQueueRepository.getCurrentMusic();
         if (currentMusic == null) {
             return;
         }
@@ -240,9 +240,13 @@ public class PlaybackManager implements Playback.Callback {
         public void onPlay() {
             LogHelper.d(TAG, "play");
             if (mQueueRepository.getCurrentMusic() == null) {
-                mQueueRepository.loadQueue(mContext);
+                mQueueRepository.loadQueue(mContext, new QueueRepository.CachedQueueLoadedCallback() {
+                    @Override
+                    public void onCachedQueueLoaded() {
+                        handlePlayRequest();
+                    }
+                });
             }
-            handlePlayRequest();
         }
 
         @Override

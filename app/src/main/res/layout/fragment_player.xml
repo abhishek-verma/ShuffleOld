@@ -1,0 +1,142 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.inpen.shuffle.playerscreen.PlayerFragment">
+
+    <ImageView
+        android:id="@+id/albumArt"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true"
+        android:adjustViewBounds="true"
+        android:background="@color/lt_black"
+        android:scaleType="centerCrop" />
+
+    <LinearLayout
+        android:id="@+id/songDetailsParent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/songTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:ellipsize="marquee"
+            android:maxLines="2"
+            android:padding="5dp"
+            android:text="Dummy Song Title"
+            android:textSize="@dimen/font_size_player_song_name" />
+
+        <TextView
+            android:id="@+id/artistName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/songTitle"
+            android:ellipsize="marquee"
+            android:maxLines="1"
+            android:padding="5dp"
+            android:text="Dummy Artist name"
+            android:textSize="@dimen/font_size_player_artist_name" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/playerControlsParent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <ImageButton
+            android:id="@+id/prevButton"
+            android:layout_width="@dimen/player_button_dimen"
+            android:layout_height="@dimen/player_button_dimen"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/previous_song"
+            android:padding="@dimen/player_button_padding"
+            android:scaleType="fitXY"
+            android:src="@drawable/ic_skip_prev"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+        <ImageButton
+            android:id="@+id/playButton"
+            android:layout_width="@dimen/player_big_button_dimen"
+            android:layout_height="@dimen/player_big_button_dimen"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/resume_song"
+            android:padding="@dimen/player_button_padding"
+            android:scaleType="fitXY"
+            android:src="@drawable/ic_play"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+        <ImageButton
+            android:id="@+id/nextButton"
+            android:layout_width="@dimen/player_button_dimen"
+            android:layout_height="@dimen/player_button_dimen"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/next_song"
+            android:padding="@dimen/player_button_padding"
+            android:scaleType="fitXY"
+            android:src="@drawable/ic_skip_next"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
+    </LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/playerActionsBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@color/translucent_black"
+        android:backgroundTintMode="add"
+        android:padding="@dimen/player_actions_bar_padding">
+
+        <ImageButton
+            android:id="@+id/likeButton"
+            android:layout_width="@dimen/image_button_touch_target_size"
+            android:layout_height="@dimen/image_button_touch_target_size"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Like"
+            android:src="@drawable/ic_thumb_up"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+        <ImageButton
+            android:id="@+id/shareButton"
+            style="@android:style/Widget.Material.ImageButton"
+            android:layout_width="@dimen/image_button_touch_target_size"
+            android:layout_height="@dimen/image_button_touch_target_size"
+            android:layout_centerVertical="true"
+            android:layout_toEndOf="@id/likeButton"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Share"
+            android:src="@drawable/ic_share"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+        <ImageButton
+            android:id="@+id/dislikeButton"
+            android:layout_width="@dimen/image_button_touch_target_size"
+            android:layout_height="@dimen/image_button_touch_target_size"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Dislike"
+            android:src="@drawable/ic_thumb_down"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
+    </RelativeLayout>
+
+    <SeekBar
+        android:id="@+id/seekBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/playerActionsBar"
+        android:layout_marginBottom="@dimen/seekbar_bottom_margin" />
+
+</RelativeLayout>

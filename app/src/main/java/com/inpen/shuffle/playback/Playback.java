@@ -25,7 +25,7 @@ import android.net.wifi.WifiManager;
 import android.os.PowerManager;
 import android.support.v4.media.session.PlaybackStateCompat;
 
-import com.inpen.shuffle.model.Audio;
+import com.inpen.shuffle.model.AudioItem;
 import com.inpen.shuffle.utils.LogHelper;
 
 import java.io.IOException;
@@ -62,7 +62,7 @@ public class Playback implements AudioManager.OnAudioFocusChangeListener,
     private int mState;
     private boolean mPlayOnFocusGain;
     private Callback mCallback;
-    private Audio mAudioItem;
+    private AudioItem mAudioItem;
     private volatile boolean mAudioNoisyReceiverRegistered;
     private volatile int mCurrentPosition;
     // Type of audio focus we have:
@@ -98,7 +98,7 @@ public class Playback implements AudioManager.OnAudioFocusChangeListener,
             mCallback.onPlaybackStatusChanged(mState);
         }
         mCurrentPosition = getCurrentStreamPosition();
-        // Give up Audio focus
+        // Give up AudioItem focus
         giveUpAudioFocus();
         unregisterAudioNoisyReceiver();
         // Relax all resources
@@ -136,7 +136,7 @@ public class Playback implements AudioManager.OnAudioFocusChangeListener,
         }
     }
 
-    public void play(Audio audioItem) {
+    public void play(AudioItem audioItem) {
         tryToGetAudioFocus();
         registerAudioNoisyReceiver();
         boolean mediaHasChanged = mAudioItem == null || !mAudioItem.equals(audioItem);
@@ -234,11 +234,11 @@ public class Playback implements AudioManager.OnAudioFocusChangeListener,
         this.mCallback = callback;
     }
 
-    public Audio getCurrentAudioItem() {
+    public AudioItem getCurrentAudioItem() {
         return mAudioItem;
     }
 
-    public void setCurrentAudioItem(Audio audioItem) {
+    public void setCurrentAudioItem(AudioItem audioItem) {
         this.mAudioItem = audioItem;
     }
 

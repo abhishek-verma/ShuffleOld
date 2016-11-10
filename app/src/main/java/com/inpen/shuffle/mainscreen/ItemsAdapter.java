@@ -24,6 +24,8 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ItemViewHold
     public ItemsAdapter(List<Item> itemList, ItemsListener itemsListener) {
         mItemList = itemList;
         mItemsListener = itemsListener;
+
+        setHasStableIds(true);
     }
 
     public void replaceData(List<Item> tasks) {
@@ -62,6 +64,11 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ItemViewHold
 
     private void setList(List<Item> tasks) {
         mItemList = checkNotNull(tasks);
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return mItemList.get(position).getId().hashCode();
     }
 
     @Override

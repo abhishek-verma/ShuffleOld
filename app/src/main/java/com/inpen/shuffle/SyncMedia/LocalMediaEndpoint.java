@@ -7,7 +7,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
 
-import com.inpen.shuffle.model.Audio;
+import com.inpen.shuffle.model.AudioItem;
 import com.inpen.shuffle.model.database.MediaContract;
 
 import java.util.Vector;
@@ -65,7 +65,7 @@ public class LocalMediaEndpoint implements MediaEndpoint {
                 String artistKey = cur.getString(COL_INDEX_ARTIST_KEY);
                 String albumArt = getAlbumArtForAlbum(cur.getInt(COL_INDEX_ALBUM_ID));
                 cv = new ContentValues();
-                cv.put(MediaContract.MediaEntry.COLUMN_SONG_ID, Audio.generateSongID(title, artist, duration));
+                cv.put(MediaContract.MediaEntry.COLUMN_SONG_ID, AudioItem.generateSongID(title, artist, duration));
                 cv.put(MediaContract.MediaEntry.COLUMN_PATH, path);
                 cv.put(MediaContract.MediaEntry.COLUMN_TITLE, title);
                 cv.put(MediaContract.MediaEntry.COLUMN_ALBUM, album);
@@ -103,13 +103,13 @@ public class LocalMediaEndpoint implements MediaEndpoint {
         return uri.toString();
         // If above doesn't work, use this instead
 //
-//        Cursor cursor = getContentResolver().query(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
-//                new String[]{MediaStore.Audio.AlbumColumns.ALBUM_ID, MediaStore.Audio.AlbumColumns.ALBUM_ART},
-//                MediaStore.Audio.Albums._ID + "=?",
+//        Cursor cursor = getContentResolver().query(MediaStore.AudioItem.Albums.EXTERNAL_CONTENT_URI,
+//                new String[]{MediaStore.AudioItem.AlbumColumns.ALBUM_ID, MediaStore.AudioItem.AlbumColumns.ALBUM_ART},
+//                MediaStore.AudioItem.Albums._ID + "=?",
 //                new String[]{String.valueOf(albumId)},
 //                null);
 //        if (cursor.moveToFirst()) {
-//            String path = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.AlbumColumns.ALBUM_ART));
+//            String path = cursor.getString(cursor.getColumnIndex(MediaStore.AudioItem.AlbumColumns.ALBUM_ART));
 //            return path;
 //        }
 //        return "";

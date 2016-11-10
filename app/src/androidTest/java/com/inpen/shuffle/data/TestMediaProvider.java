@@ -64,9 +64,9 @@ public class TestMediaProvider {
             cv.put(MediaEntry.COLUMN_SONG_ID, "testSongId" + i);
             cv.put(MediaEntry.COLUMN_TITLE, "testTitle" + i);
             cv.put(MediaEntry.COLUMN_ALBUM, "testAlbum" + i);
-            cv.put(MediaEntry.COLUMN_ALBUM_KEY, 100 + i);
+            cv.put(MediaEntry.COLUMN_ALBUM_KEY, "albumKey" + i);
             cv.put(MediaEntry.COLUMN_ARTIST, "testArtist" + i);
-            cv.put(MediaEntry.COLUMN_ARTIST_KEY, 100 + i);
+            cv.put(MediaEntry.COLUMN_ARTIST_KEY, "artistKey" + i);
             cv.put(MediaEntry.COLUMN_FOLDER_PATH, "testFolderName" + i);
             cv.put(MediaEntry.COLUMN_ALBUM_ART, "testArtUrl/subpath" + i);
             cv.put(MediaEntry.COLUMN_DURATION, "98293" + i);
@@ -149,12 +149,12 @@ public class TestMediaProvider {
                     cursor.getString(COLUMN_INDEX_TITLE).equals("testTitle" + i));
             assertTrue("required: " + i + ", actual: " + cursor.getString(COLUMN_INDEX_ALBUM),
                     cursor.getString(COLUMN_INDEX_ALBUM).equals("testAlbum" + i));
-            assertTrue("required: " + i + ", actual: " + cursor.getInt(COLUMN_INDEX_ALBUM_ID),
-                    cursor.getInt(COLUMN_INDEX_ALBUM_ID) == 100 + i);
+            assertTrue("required: " + i + ", actual: " + cursor.getString(COLUMN_INDEX_ALBUM_ID),
+                    cursor.getString(COLUMN_INDEX_ALBUM_ID).equals("albumKey" + i));
             assertTrue("required: " + i + ", actual: " + cursor.getString(COLUMN_INDEX_ARTIST),
                     cursor.getString(COLUMN_INDEX_ARTIST).equals("testArtist" + i));
-            assertTrue("required: " + i + ", actual: " + cursor.getInt(COLUMN_INDEX_ARTIST_ID),
-                    cursor.getInt(COLUMN_INDEX_ARTIST_ID) == 100 + i);
+            assertTrue("required: " + i + ", actual: " + cursor.getString(COLUMN_INDEX_ARTIST_ID),
+                    cursor.getString(COLUMN_INDEX_ARTIST_ID).equals("artistKey" + i));
             assertTrue("required: " + i + ", actual: " + cursor.getString(COLUMN_INDEX_DURATION),
                     cursor.getString(COLUMN_INDEX_DURATION).equals("98293" + i));
             assertTrue("required: " + i + ", actual: " + cursor.getString(COLUMN_INDEX_ALBUM_ART),

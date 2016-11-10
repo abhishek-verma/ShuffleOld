@@ -69,8 +69,8 @@ public class QueueHelper {
         return s.toString();
     }
 
-    public synchronized List<Audio> generateQueue(@Nullable CustomTypes.ItemType selector,
-                                                  @Nullable List<String> selectorItems) {
+    public synchronized List<AudioItem> generateQueue(@Nullable CustomTypes.ItemType selector,
+                                                      @Nullable List<String> selectorItems) {
 
 
         //TODO temp log, remove
@@ -78,7 +78,7 @@ public class QueueHelper {
                 + " selectors: " + selectorItems.toString());
 
         Cursor cursor = null;
-        List<Audio> audioList;
+        List<AudioItem> audioItemList;
         //context.getContentResolver().query()
 
         try {
@@ -144,10 +144,10 @@ public class QueueHelper {
             }
 
             if (cursor != null && cursor.moveToFirst()) {
-                audioList = new ArrayList<>(cursor.getCount());
+                audioItemList = new ArrayList<>(cursor.getCount());
 
                 do {
-                    Audio audio = new Audio(
+                    AudioItem audioItem = new AudioItem(
                             cursor.getString(COLUMN_SONG_ID),
                             cursor.getString(COLUMN_INDEX_PATH),
                             cursor.getString(COLUMN_INDEX_TITLE),
@@ -155,33 +155,33 @@ public class QueueHelper {
                             cursor.getString(COLUMN_INDEX_ARTIST),
                             cursor.getString(COLUMN_INDEX_ALBUM_ART),
                             Long.parseLong(cursor.getString(COLUMN_INDEX_DURATION)));
-                    if (!audioList.contains(audio))
-                        audioList.add(audio);
+                    if (!audioItemList.contains(audioItem))
+                        audioItemList.add(audioItem);
                 }
                 while (cursor.moveToNext());
 
             } else {
-                audioList = new ArrayList<>();
+                audioItemList = new ArrayList<>();
             }
 
-            shuffleSongQueue(audioList);
+            shuffleSongQueue(audioItemList);
         } finally {
             if (cursor != null)
                 cursor.close();
         }
         //TODO temp log, remove
-        LogHelper.v(LOG_TAG + "temp", "curated audioList size: " + audioList.size() + "\ncontent: " + audioList.toString());
-        return audioList;
+        LogHelper.v(LOG_TAG + "temp", "curated audioItemList size: " + audioItemList.size() + "\ncontent: " + audioItemList.toString());
+        return audioItemList;
     }
 
-    private void shuffleSongQueue(List<Audio> audioList) {
+    private void shuffleSongQueue(List<AudioItem> audioItemList) {
         //TODO implement custom shuffle algo
-        List<Audio> likedSongsList = getLikedSongs();
-        List<Audio> dislikedSongsList = getDislikedSongs();
-        Collections.shuffle(audioList);
+        List<AudioItem> likedSongsList = getLikedSongs();
+        List<AudioItem> dislikedSongsList = getDislikedSongs();
+        Collections.shuffle(audioItemList);
     }
 
-    private List<Audio> getLikedSongs() {
+    private List<AudioItem> getLikedSongs() {
         Cursor cursor = mContext.getContentResolver()
                 .query(MediaEntry.buildSongByPlaylistUri(),
                         SONGS_QUEUE_CURSOR_COLUMNS,
@@ -190,13 +190,13 @@ public class QueueHelper {
                         new String[]{PlAYLIST_LIKED},
                         MediaProvider.mSongsSortOrder);
 
-        List<Audio> audioList;
+        List<AudioItem> audioItemList;
 
         if (cursor != null && cursor.moveToFirst()) {
-            audioList = new ArrayList<>(cursor.getCount());
+            audioItemList = new ArrayList<>(cursor.getCount());
 
             do {
-                audioList.add(new Audio(
+                audioItemList.add(new AudioItem(
                         cursor.getString(COLUMN_SONG_ID),
                         cursor.getString(COLUMN_INDEX_PATH),
                         cursor.getString(COLUMN_INDEX_TITLE),
@@ -209,13 +209,13 @@ public class QueueHelper {
             while (cursor.moveToNext());
 
         } else {
-            return new ArrayList<Audio>();
+            return new ArrayList<AudioItem>();
         }
 
-        return audioList;
+        return audioItemList;
     }
 
-    private List<Audio> getDislikedSongs() {
+    private List<AudioItem> getDislikedSongs() {
         Cursor cursor = mContext.getContentResolver()
                 .query(MediaEntry.buildSongByPlaylistUri(),
                         SONGS_QUEUE_CURSOR_COLUMNS,
@@ -224,13 +224,13 @@ public class QueueHelper {
                         new String[]{PlAYLIST_DISLIKED},
                         MediaProvider.mSongsSortOrder);
 
-        List<Audio> audioList;
+        List<AudioItem> audioItemList;
 
         if (cursor != null && cursor.moveToFirst()) {
-            audioList = new ArrayList<>(cursor.getCount());
+            audioItemList = new ArrayList<>(cursor.getCount());
 
             do {
-                audioList.add(new Audio(
+                audioItemList.add(new AudioItem(
                         cursor.getString(COLUMN_SONG_ID),
                         cursor.getString(COLUMN_INDEX_PATH),
                         cursor.getString(COLUMN_INDEX_TITLE),
@@ -246,7 +246,7 @@ public class QueueHelper {
             return new ArrayList<>();
         }
 
-        return audioList;
+        return audioItemList;
     }
 
 }

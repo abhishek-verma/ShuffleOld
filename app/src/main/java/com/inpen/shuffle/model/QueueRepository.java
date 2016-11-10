@@ -28,7 +28,7 @@ public class QueueRepository {
     public static QueueRepository mQueueRepositoryInstance;
 
     // cached playing queue
-    public List<Audio> mPlayingQueue;
+    public List<AudioItem> mPlayingQueue;
     public int mCurrentTrackIndex = -1;
     private SharedPreferences mPreferences;
     private volatile RepositoryState mCurrentState = CustomTypes.RepositoryState.NON_INITIALIZED;
@@ -44,6 +44,15 @@ public class QueueRepository {
         }
 
         return mQueueRepositoryInstance;
+    }
+
+    public static boolean hasCachedQueue(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(AUDIO_STORAGE, Context.MODE_PRIVATE);
+        return prefs.contains(KEY_PLAYING_QUEUE);
+    }
+
+    public RepositoryState getState() {
+        return mCurrentState;
     }
 
     /**
@@ -70,29 +79,29 @@ public class QueueRepository {
         // cache data
 
         // Asynchronously load the music catalog in a separate thread
-        new AsyncTask<Object, Void, List<Audio>>() {
+        new AsyncTask<Object, Void, List<AudioItem>>() {
 
             QueueRepositoryInitializedCallback mCallback;
             Context mContext;
 
             @Override
-            protected List<Audio> doInBackground(Object... params) {
+            protected List<AudioItem> doInBackground(Object... params) {
                 CustomTypes.ItemType selector = (CustomTypes.ItemType) params[0];
                 List<String> selectorItems = (List<String>) params[1];
                 mContext = (Context) params[2];
                 mCallback = (QueueRepositoryInitializedCallback) params[3];
 
                 QueueHelper queueHelper = new QueueHelper(mContext);
-                List<Audio> audioList = queueHelper.generateQueue(selector, selectorItems);
-                return audioList;
+                List<AudioItem> audioItemList = queueHelper.generateQueue(selector, selectorItems);
+                return audioItemList;
             }
 
             @Override
-            protected void onPostExecute(List<Audio> audioList) {
+            protected void onPostExecute(List<AudioItem> audioItemList) {
 
-                if (audioList != null && audioList.size() != 0) {
+                if (audioItemList != null && audioItemList.size() != 0) {
                     try {
-                        mPlayingQueue = audioList;
+                        mPlayingQueue = audioItemList;
                         mCurrentTrackIndex = 0;
                         storeQueue(mContext);
                         mCurrentState = RepositoryState.INITIALIZED;
@@ -123,35 +132,66 @@ public class QueueRepository {
         editor.apply();
     }
 
-    public boolean loadQueue(Context context) {
+    /**
+     * @param context
+     * @param callback
+     * @return true if a cached queue exists and Repo is trying to load it asynchronously else false
+     */
+    public boolean loadQueue(Context context, CachedQueueLoadedCallback callback) {
 
-        // TODO retrieve asynchronously, use callbacks
-        try {
-            if (mCurrentState.equals(CustomTypes.RepositoryState.NON_INITIALIZED))
-                mCurrentState = CustomTypes.RepositoryState.INITIALIZING;
+        if (!hasCachedQueue(context))
+            return false;
 
-            Gson gson = new Gson();
-            String json = getmPreferences(context).getString(KEY_PLAYING_QUEUE, null);
+        // retrieve asynchronously, inform callback
+        new AsyncTask<Object, Void, Void>() {
 
-            Type type = new TypeToken<ArrayList<Audio>>() {
-            }.getType();
+            Context mContext;
+            CachedQueueLoadedCallback mCallback;
 
-            mPlayingQueue = gson.fromJson(json, type);
-            mCurrentTrackIndex = getmPreferences(context).getInt(KEY_CURRENT_TRACK_INDEX, -1);
+            @Override
+            protected Void doInBackground(Object... objects) {
 
-            if (mPlayingQueue != null && mPlayingQueue.size() > 0) {
-                mCurrentState = CustomTypes.RepositoryState.INITIALIZED;
+                mContext = (Context) objects[0];
+                mCallback = (CachedQueueLoadedCallback) objects[1];
+
+                try {
+                    if (mCurrentState.equals(CustomTypes.RepositoryState.NON_INITIALIZED))
+                        mCurrentState = CustomTypes.RepositoryState.INITIALIZING;
+
+                    Gson gson = new Gson();
+                    String json = getmPreferences(mContext).getString(KEY_PLAYING_QUEUE, null);
+
+                    Type type = new TypeToken<ArrayList<AudioItem>>() {
+                    }.getType();
+
+                    mPlayingQueue = gson.fromJson(json, type);
+                    mCurrentTrackIndex = getmPreferences(mContext).getInt(KEY_CURRENT_TRACK_INDEX, -1);
+
+                    if (mPlayingQueue != null && mPlayingQueue.size() > 0) {
+                        mCurrentState = CustomTypes.RepositoryState.INITIALIZED;
+                    }
+
+                } finally {
+                    if (!mCurrentState.equals(RepositoryState.INITIALIZED)) {
+                        // Something bad happened, so we reset state to NON_INITIALIZED to allow
+                        // retries (eg if the network connection is temporary unavailable)
+                        mCurrentState = CustomTypes.RepositoryState.NON_INITIALIZED;
+                    }
+                }
+
+                return null;
             }
 
-        } finally {
-            if (!mCurrentState.equals(RepositoryState.INITIALIZED)) {
-                // Something bad happened, so we reset state to NON_INITIALIZED to allow
-                // retries (eg if the network connection is temporary unavailable)
-                mCurrentState = CustomTypes.RepositoryState.NON_INITIALIZED;
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                super.onPostExecute(aVoid);
+                if (mCallback != null)
+                    mCallback.onCachedQueueLoaded();
             }
-        }
+        }.execute(context, callback);
 
-        return mCurrentState.equals(RepositoryState.INITIALIZED);
+
+        return true;
 
     }
 
@@ -177,13 +217,13 @@ public class QueueRepository {
         return mPreferences;
     }
 
-    public Audio getCurrentMusic() {
+    public AudioItem getCurrentMusic() {
         return mCurrentState.equals(RepositoryState.INITIALIZED) ?
                 mPlayingQueue.get(mCurrentTrackIndex)
                 : null;
     }
 
-    public void setCurrentQueueItem(Audio audioItem) {
+    public void setCurrentQueueItem(AudioItem audioItem) {
         if (mPlayingQueue != null)
             mCurrentTrackIndex = mPlayingQueue.indexOf(audioItem);
 
@@ -233,5 +273,9 @@ public class QueueRepository {
 
     public interface CurrentItemIndexChangedObserver {
         void onQueueIndexChanged();
+    }
+
+    public interface CachedQueueLoadedCallback {
+        void onCachedQueueLoaded();
     }
 }

@@ -10,4 +10,10 @@
     <string name="label_play">PLAY</string>
     <string name="label_previous">PREVIOUS</string>
 
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="previous_song">Previous Song</string>
+    <string name="resume_song">Resume</string>
+    <string name="next_song">Next Song</string>
+
 </resources>

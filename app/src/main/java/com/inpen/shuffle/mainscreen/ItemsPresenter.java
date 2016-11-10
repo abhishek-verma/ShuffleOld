@@ -91,6 +91,45 @@ public class ItemsPresenter implements
         isActive = true;
     }
 
+    // This method is used inside method onLoadFinished to check
+    // add items To a list also supplied as parameters
+    private final void addItem(List<Item> itemList, Item item) {
+
+        if (!itemList.contains(item)) {
+            itemList.add(item);
+        }
+    }
+
+    @Override
+    public Loader onCreateLoader(int i, Bundle bundle) {
+        mItemsView.setProgressIndicator(true);
+
+        switch (mItemType) {
+            case ALBUM_ID:
+                return new CursorLoader(mContext,
+                        MediaContract.MediaEntry.CONTENT_URI,
+                        ALBUMS_QUERY_CURSOR_COLUMNS,
+                        null, null, null);
+            case ARTIST_ID:
+                return new CursorLoader(mContext,
+                        MediaContract.MediaEntry.CONTENT_URI,
+                        ARTISTS_QUERY_CURSOR_COLUMNS,
+                        null, null, null);
+            case FOLDER:
+                return new CursorLoader(mContext,
+                        MediaContract.MediaEntry.CONTENT_URI,
+                        FOLDERS_QUERY_CURSOR_COLUMNS,
+                        null, null, null);
+            case PLAYLIST:
+                return new CursorLoader(mContext,
+                        MediaContract.PlaylistsEntry.CONTENT_URI,
+                        PLAYLISTS_QUERY_CURSOR_COLUMNS,
+                        null, null, null);
+
+        }
+        return null;
+    }
+
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
 
@@ -156,45 +195,6 @@ public class ItemsPresenter implements
             mItemsView.selectItems(mSelectedItemsRepository.getmSelectedItemList());
         }
 
-    }
-
-    // This method is used inside method onLoadFinished to check
-    // add items To a list also supplied as parameters
-    private final void addItem(List<Item> itemList, Item item) {
-
-        if (!itemList.contains(item)) {
-            itemList.add(item);
-        }
-    }
-
-    @Override
-    public Loader onCreateLoader(int i, Bundle bundle) {
-        mItemsView.setProgressIndicator(true);
-
-        switch (mItemType) {
-            case ALBUM_ID:
-                return new CursorLoader(mContext,
-                        MediaContract.MediaEntry.CONTENT_URI,
-                        ALBUMS_QUERY_CURSOR_COLUMNS,
-                        null, null, null);
-            case ARTIST_ID:
-                return new CursorLoader(mContext,
-                        MediaContract.MediaEntry.CONTENT_URI,
-                        ARTISTS_QUERY_CURSOR_COLUMNS,
-                        null, null, null);
-            case FOLDER:
-                return new CursorLoader(mContext,
-                        MediaContract.MediaEntry.CONTENT_URI,
-                        FOLDERS_QUERY_CURSOR_COLUMNS,
-                        null, null, null);
-            case PLAYLIST:
-                return new CursorLoader(mContext,
-                        MediaContract.PlaylistsEntry.CONTENT_URI,
-                        PLAYLISTS_QUERY_CURSOR_COLUMNS,
-                        null, null, null);
-
-        }
-        return null;
     }
 
     @Override

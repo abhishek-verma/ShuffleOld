@@ -104,9 +104,17 @@ public class ItemsFragment extends Fragment implements MainScreenContract.ItemsV
         // in content do not change the layout size of the RecyclerView
         mRecyclerView.setHasFixedSize(true);
 
-        // use a linear layout manager
-        GridLayoutManager mLayoutManager = new GridLayoutManager(getContext(), 2);
-        mRecyclerView.setLayoutManager(mLayoutManager);
+        // Create a grid layout with two columns
+        GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 2);
+
+        // Create a custom SpanSizeLookup where the first item spans both columns
+//        layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+//            @Override
+//            public int getSpanSize(int position) {
+//                return position == 0 ? 2 : 1;
+//            }
+//        });
+        mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setAdapter(mItemsAdapter);
 
         return view;

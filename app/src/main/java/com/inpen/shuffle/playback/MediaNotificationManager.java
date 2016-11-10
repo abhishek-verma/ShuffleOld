@@ -249,7 +249,6 @@ public class MediaNotificationManager extends BroadcastReceiver {
                 .setColor(mNotificationColor)
                 .setSmallIcon(R.drawable.ic_shuffle)//TODO add better icon
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-                .setUsesChronometer(true)
                 .setContentIntent(createContentIntent())
                 .setContentTitle(description.getTitle())
                 .setContentText(description.getSubtitle())

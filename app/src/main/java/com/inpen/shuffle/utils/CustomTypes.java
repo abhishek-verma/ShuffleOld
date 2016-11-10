@@ -49,4 +49,8 @@ public class CustomTypes {
         HIDDEN, PLAYER, SHUFFLE
     }
 
+    public enum PlayerViewState {
+        PAUSED, PLAYING, SEEKING
+    }
+
 }

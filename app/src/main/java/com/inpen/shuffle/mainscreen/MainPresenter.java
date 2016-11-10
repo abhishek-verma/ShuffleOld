@@ -69,7 +69,7 @@ public class MainPresenter implements MainScreenContract.ActivityActionsListener
             selectorItems.add(item.getId());
         }
 
-        // initialize queueRepo
+        // updateViews queueRepo
         QueueRepository queueRepository = QueueRepository.getInstance();
         queueRepository.initializeQueue(mSelectedItemsRepository.getmItemType(),
                 selectorItems, context, new QueueRepository.QueueRepositoryInitializedCallback() {

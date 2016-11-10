@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.support.test.runner.AndroidJUnit4;
 import android.util.Log;
 
-import com.inpen.shuffle.model.Audio;
+import com.inpen.shuffle.model.AudioItem;
 import com.inpen.shuffle.model.QueueHelper;
 import com.inpen.shuffle.model.database.MediaContract;
 import com.inpen.shuffle.model.database.MediaDbHelper;
@@ -103,38 +103,38 @@ public class QueueHelperTest {
 
         QueueHelper qh = new QueueHelper(mContext);
 
-        List<Audio> audioList;
+        List<AudioItem> audioItemList;
 
         // Retrieving all songs
-//        audioList = qh.generateQueue(CustomTypes.ItemType,
+//        audioItemList = qh.generateQueue(CustomTypes.ItemType,
 //                null);
-//        Log.i(LOG_TAG, "all songs: " + audioList.toString());
-//        assertTrue(audioList.size() == 4);
+//        Log.i(LOG_TAG, "all songs: " + audioItemList.toString());
+//        assertTrue(audioItemList.size() == 4);
 
         // Retrieving all songs for album
-        audioList = qh.generateQueue(CustomTypes.ItemType.ALBUM_ID,
+        audioItemList = qh.generateQueue(CustomTypes.ItemType.ALBUM_ID,
                 Arrays.asList("101", "102"));
-        Log.i(LOG_TAG, "all songs for albumId: " + audioList.toString());
-        assertTrue("Expected Size: 2, Actual size: " + audioList.size(), audioList.size() == 2);
+        Log.i(LOG_TAG, "all songs for albumId: " + audioItemList.toString());
+        assertTrue("Expected Size: 2, Actual size: " + audioItemList.size(), audioItemList.size() == 2);
 
         // Retrieving all songs for artist
-        audioList = qh.generateQueue(CustomTypes.ItemType.ARTIST_ID,
+        audioItemList = qh.generateQueue(CustomTypes.ItemType.ARTIST_ID,
                 Arrays.asList("101", "102"));
-        Log.i(LOG_TAG, "all songs for artistId: " + audioList.toString());
-        assertTrue(audioList.size() == 2);
+        Log.i(LOG_TAG, "all songs for artistId: " + audioItemList.toString());
+        assertTrue(audioItemList.size() == 2);
 
 //         Retrieving all songs for playlist
-        audioList = qh.generateQueue(CustomTypes.ItemType.PLAYLIST,
+        audioItemList = qh.generateQueue(CustomTypes.ItemType.PLAYLIST,
                 Arrays.asList("playlistName1", "playlistName2"));
-        Log.i(LOG_TAG, "all songs playlist: " + audioList.toString());
-        assertTrue("Expected size: 2, Actual size: " + audioList.size(),
-                audioList.size() == 2);
+        Log.i(LOG_TAG, "all songs playlist: " + audioItemList.toString());
+        assertTrue("Expected size: 2, Actual size: " + audioItemList.size(),
+                audioItemList.size() == 2);
 
         // Retrieving all songs for path
-        audioList = qh.generateQueue(CustomTypes.ItemType.FOLDER,
+        audioItemList = qh.generateQueue(CustomTypes.ItemType.FOLDER,
                 Arrays.asList("testPath/subpath1", "testPath/subpath2"));
-        Log.i(LOG_TAG, "all songs for path: " + audioList.toString());
-        assertTrue(audioList.size() == 2);
+        Log.i(LOG_TAG, "all songs for path: " + audioItemList.toString());
+        assertTrue(audioItemList.size() == 2);
     }
 
     @After

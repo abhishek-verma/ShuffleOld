@@ -9,7 +9,7 @@ import java.io.Serializable;
 /**
  * Created by Abhishek on 10/22/2016.
  */
-public class Audio implements Serializable {
+public class AudioItem implements Serializable {
 
     private String mSourcePath;
     private String mTitle;
@@ -19,7 +19,7 @@ public class Audio implements Serializable {
     private long mDuration;
     private String mSongID;
 
-    public Audio(String songId, String path, String title, String album, String artist, String albumArt, long duration) {
+    public AudioItem(String songId, String path, String title, String album, String artist, String albumArt, long duration) {
         this.mSourcePath = path;
         this.mTitle = title;
         this.mAlbum = album;
@@ -99,9 +99,9 @@ public class Audio implements Serializable {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof Audio) {
-            Audio audio = (Audio) obj;
-            if (audio.getmSongID().equals(getmSongID()))
+        if (obj instanceof AudioItem) {
+            AudioItem audioItem = (AudioItem) obj;
+            if (audioItem.getmSongID().equals(getmSongID()))
                 return true;
         }
         return super.equals(obj);

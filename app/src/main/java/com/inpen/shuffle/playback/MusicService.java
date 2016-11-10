@@ -22,13 +22,11 @@ import android.support.v7.app.NotificationCompat;
 
 import com.inpen.shuffle.R;
 import com.inpen.shuffle.mainscreen.MainActivity;
-import com.inpen.shuffle.model.Audio;
+import com.inpen.shuffle.model.AudioItem;
 import com.inpen.shuffle.model.QueueRepository;
 import com.inpen.shuffle.playerscreen.PlayerActivity;
 import com.inpen.shuffle.utils.LogHelper;
-import com.squareup.picasso.Picasso;
 
-import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -36,7 +34,7 @@ import java.util.concurrent.ExecutionException;
  */
 public class MusicService extends Service implements Playback.Callback {
 
-    public static final String BROADCAST_CURRENT_SONG_CHANGED = "CURRENT_SONG_CHANGED";
+    //    public static final String BROADCAST_CURRENT_SONG_CHANGED = "CURRENT_SONG_CHANGED";
     public static final String BROADCAST_PLAYBACK_STATE_CHANGED = "PLAYBACK_STATE_CHANGED";
     public static final String BROADCAST_EXTRA_PLAYBACK_STATE_KEY = "PLAYBACK_STATE";
     public static final String INTENT_ACTION_PLAY = "ACTION_PLAY";
@@ -54,7 +52,7 @@ public class MusicService extends Service implements Playback.Callback {
     public void onCreate() {
         super.onCreate();
         mQueueRepository = QueueRepository.getInstance();
-        mQueueRepository.loadQueue(this);
+        mQueueRepository.loadQueue(this, null);
 
         mPlayback = new Playback(this);
         mPlayback.setCallback(this);
@@ -100,7 +98,7 @@ public class MusicService extends Service implements Playback.Callback {
     ///////////////////////////////////////////////////////////////////////////
 
     public void play() {
-        Audio currentMusic = mQueueRepository.getCurrentMusic();
+        AudioItem currentMusic = mQueueRepository.getCurrentMusic();
 
         if (currentMusic != null) {
             mPlayback.play(currentMusic);
@@ -212,16 +210,19 @@ public class MusicService extends Service implements Playback.Callback {
                 bitmap = new AsyncTask<Void, Void, Bitmap>() {
                     @Override
                     protected Bitmap doInBackground(Void... params) {
-                        try {
-                            return Picasso.with(getApplicationContext())
-                                    .load(mQueueRepository.getCurrentMusic().getmAlbumArt())
-                                    .resize(200, 200)
-                                    .placeholder(R.drawable.ic_shuffle)
-                                    .error(R.drawable.ic_shuffle)
-                                    .get();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
+//                        try {
+//                            return Glide.with(getApplicationContext())
+//                                    .preload(mQueueRepository.getCurrentMusic().getmAlbumArt())
+//                                    .asBitmap()
+//                                    .placeholder(R.drawable.ph_album_art)
+//                                    .error(R.drawable.ic_shuffle)
+//                                    .into(200, 200)
+//                                    .get();
+//                        }  catch (InterruptedException e) {
+//                            e.printStackTrace();
+//                        } catch (ExecutionException e) {
+//                            e.printStackTrace();
+//                        }
                         return null;
                     }
                 }.execute().get();

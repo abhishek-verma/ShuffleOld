@@ -125,10 +125,7 @@ public class MusicServiceUnused extends Service implements
         }
 
 
-        boolean queueNotEmpty = mQueueRepository.loadQueue(this);
-        if (queueNotEmpty) {
-            mPlaybackManager.handlePlayRequest();
-        } else
+        if (QueueRepository.hasCachedQueue(this))
             stopSelf();
 
         // Reset the delay handler to enqueue a message to stop the service if
