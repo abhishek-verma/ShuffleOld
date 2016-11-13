@@ -17,6 +17,7 @@ import java.util.List;
 
 public class QueueHelper {
 
+
     public static final int COLUMN_INDEX_TITLE = 0;
     public static final int COLUMN_INDEX_ALBUM = 1;
     public static final int COLUMN_INDEX_ARTIST = 2;
@@ -27,6 +28,9 @@ public class QueueHelper {
     public static final int COLUMN_INDEX_ALBUM_ID = 7;
     public static final int COLUMN_INDEX_ARTIST_ID = 8;
     public static final int COLUMN_PLAYLIST_NAME = 7;//coz we dont use album_id and artist_id columns for songs_for_playlist
+    final static double LIKED_PREF = 0.7/*very_often=0.8, often=0.7, normal= 0.6*/,
+            NORMAL_PREF = 0.6,
+            DISLIKED_PREF = 0.5/*normal=0.6, less_often=0.5, rarely=0.4, never=0*/;
     private static final String LOG_TAG = LogHelper.makeLogTag(QueueHelper.class);
     private static final String[] SONGS_QUEUE_CURSOR_COLUMNS = {
             MediaEntry.TABLE_NAME + "." + MediaEntry.COLUMN_TITLE,
@@ -175,6 +179,7 @@ public class QueueHelper {
 
     private void shuffleSongQueue(List<AudioItem> audioItemList) {
         //TODO implement custom shuffle algo
+        //THAT TAKES INTO ACCOUNT THE LIKED AND DISLIKED SONGS
         List<AudioItem> likedSongsList = getLikedSongs();
         List<AudioItem> dislikedSongsList = getDislikedSongs();
         Collections.shuffle(audioItemList);
@@ -244,4 +249,64 @@ public class QueueHelper {
         return audioItemList;
     }
 
+//
+//    private List<AudioItem> weightedShuffle(List<AudioItem> allSongs,
+//                                            List<AudioItem> likedSongs,
+//                                            List<AudioItem> dislikedSongs) {
+//
+//        double pref;
+//        int i=0;
+//        for(i=(int)(allSongs.size()*0.5); i<allSongs.size(); i++){
+//
+//            if(likedSongs.contains(allSongs.get(i))) pref = LIKED_PREF;
+//            else if(dislikedSongs.contains(allSongs.get()))
+//
+//            double rand = Math.random();
+//            if(pref > NORMAL_PREF) {
+//                debugPrint("i: " + i);
+//                debugPrint("Value of rand: " + rand);
+//                if(rand*pref > 0.5) {
+//                    //swap to song to somewhere between
+//                    //0 to (int)songs.size()*(1-random*pref)
+//                    //ie random()*((int) songs.size()*(1-random*pref)
+//
+//                    int dest = (int)(
+//                            Math.random()
+//                                    *(songs.size()*(1-rand*pref))
+//                    );
+//
+//                    debugPrint("Dest of the liked song: " + dest);
+//
+//                    Collections.swap(songs, i, dest);
+//                }
+//            }
+//        }
+//
+//        for(i=0; i<(int)(songs.size()*0.6); i++){
+//            double pref = songs.get(i).pref;
+//            double rand = Math.random();
+//            if(pref < NORMAL_PREF) {
+//                debugPrint("i: " + i);
+//                debugPrint("Value of rand: " + rand);
+//
+//                if(rand*pref < 0.37) {
+//                    //swap to song to somewhere between
+//                    //(int)songs.size()*(1-random*pref) to songs.size()
+//                    //ie (int)songs.size*(1-random*pref + random()*(random*pref))
+//
+//                    int dest = (int)(
+//                            songs.size()
+//                                    * (1-rand*pref + Math.random()*(rand*pref))
+//                    );
+//
+//                    debugPrint("Dest of the disliked song: " + dest);
+//
+//                    Collections.rotate(songs.subList(i, dest+1), -1);
+//                    i--;//so that the counter does not skip the next song
+//                }
+//            }
+//        }
+//
+//        return allSongs;
+//    }
 }

@@ -13,7 +13,7 @@
         <activity
             android:name=".mainscreen.MainActivity"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -31,12 +31,12 @@
 
         <activity
             android:name=".playerscreen.PlayerActivity"
-            android:theme="@style/AppTheme.NoActionBar.StatusBarOverlay" />
+            android:theme="@style/AppTheme.NoActionBar.PlayerActivity" />
 
         <service
             android:name=".playback.MusicService"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="true" />
 
         <receiver
             android:name=".widget.PlayerWidgetProvider"

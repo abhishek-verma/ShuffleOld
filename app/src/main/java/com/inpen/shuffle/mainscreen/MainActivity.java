@@ -226,12 +226,14 @@ public class MainActivity extends AppCompatActivity implements MainScreenContrac
             } else {
                 // Google Sign In failed, update UI appropriately
                 // ...
+                Toast.makeText(MainActivity.this, "Authentication failed! Please try again later.",
+                        Toast.LENGTH_SHORT).show();
                 LogHelper.e(LOG_TAG, "Login failed! + resultCode: " + requestCode);
             }
         }
     }
 
-    private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
+    private void firebaseAuthWithGoogle(final GoogleSignInAccount acct) {
         FirebaseAuth auth = FirebaseAuth.getInstance();
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
         auth.signInWithCredential(credential)
@@ -242,11 +244,11 @@ public class MainActivity extends AppCompatActivity implements MainScreenContrac
                         // the auth state listener will be notified and logic to handle the
                         // signed in user can be handled in the listener.
                         if (task.isSuccessful()) {
-                            Toast.makeText(MainActivity.this, "Authentication passed.",
+                            Toast.makeText(MainActivity.this, "Hey " + acct.getDisplayName() + "!",
                                     Toast.LENGTH_SHORT).show();
                             SyncMediaIntentService.syncMedia(MainActivity.this);
                         } else {
-                            Toast.makeText(MainActivity.this, "Authentication failed.",
+                            Toast.makeText(MainActivity.this, "Authentication failed! Please try again later.",
                                     Toast.LENGTH_SHORT).show();
                         }
                     }
@@ -368,18 +370,15 @@ public class MainActivity extends AppCompatActivity implements MainScreenContrac
         //Check to see which item was being clicked and perform appropriate action
         switch (menuItem.getItemId()) {
             case R.id.navOptionSongs:
-                Toast.makeText(getApplicationContext(), "Songs Selected", Toast.LENGTH_SHORT).show();
                 songListIntent = new Intent(this, SongsActivity.class);
                 startActivity(songListIntent);
                 break;
             case R.id.navOptionLiked:
-                Toast.makeText(getApplicationContext(), "LikedSongs Selected", Toast.LENGTH_SHORT).show();
                 songListIntent = new Intent(this, SongsActivity.class);
                 songListIntent.putExtra(SongsActivity.EXTRA_PLAYLIST_FILTER_KEY, StaticStrings.PlAYLIST_NAME_LIKED);
                 startActivity(songListIntent);
                 break;
             case R.id.navOptionDisliked:
-                Toast.makeText(getApplicationContext(), "Disliked Selected", Toast.LENGTH_SHORT).show();
                 songListIntent = new Intent(this, SongsActivity.class);
                 songListIntent.putExtra(SongsActivity.EXTRA_PLAYLIST_FILTER_KEY, StaticStrings.PlAYLIST_NAME_DISLIKED);
                 startActivity(songListIntent);
@@ -395,6 +394,11 @@ public class MainActivity extends AppCompatActivity implements MainScreenContrac
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
 
+    }
+
+    @Override
+    public AppCompatActivity getActivityContext() {
+        return MainActivity.this;
     }
 
     public class MyPagerAdapter extends FragmentPagerAdapter {

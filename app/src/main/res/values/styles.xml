@@ -6,6 +6,8 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+
+        <item name="android:windowContentTransitions">true</item>
     </style>
 
     <style name="AppTheme.NoActionBar">
@@ -13,12 +15,39 @@
         <item name="windowNoTitle">true</item>
     </style>
 
-    <style name="AppTheme.NoActionBar.StatusBarOverlay" parent="AppTheme.NoActionBar">
+
+    <style name="AppTheme.NoActionBar.MainActivity" parent="AppTheme.NoActionBar">
+        <item name="android:windowEnterTransition">@transition/main_activity_transition</item>
+        <item name="android:windowExitTransition">@transition/main_activity_transition</item>
+        <item name="android:windowReturnTransition">@transition/main_activity_transition</item>
+
+        <!-- specify shared element transitions -->
+        <item name="android:windowSharedElementEnterTransition">
+            @transition/change_image_transform
+        </item>
+        <item name="android:windowSharedElementExitTransition">
+            @transition/change_image_transform
+        </item>
+    </style>
+
+    <style name="AppTheme.NoActionBar.PlayerActivity" parent="AppTheme.NoActionBar">
+        <item name="android:windowEnterTransition">@transition/player_activity_transition</item>
+        <item name="android:windowExitTransition">@transition/player_activity_transition</item>
+        <item name="android:windowReturnTransition">@transition/player_activity_transition</item>
         <item name="android:windowTranslucentStatus">true</item>
+
+        <!-- specify shared element transitions -->
+        <item name="android:windowSharedElementEnterTransition">
+            @transition/change_image_transform
+        </item>
+        <item name="android:windowSharedElementExitTransition">
+            @transition/change_image_transform
+        </item>
     </style>
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat" />
+
 
 </resources>

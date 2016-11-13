@@ -36,6 +36,8 @@ public interface PlayerScreenContract {
         void showLiked(boolean enabled);
 
         void showDisliked(boolean enabled);
+
+        void setSeekBarProgress(int progress);
     }
 
     interface PlayerActionsListener {
@@ -60,6 +62,7 @@ public interface PlayerScreenContract {
 
         void onStop();
 
+        void scheduleSeekBarUpdate(boolean enable);
     }
 
     interface SuggestionsView {

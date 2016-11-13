@@ -51,7 +51,6 @@ public class MusicService extends Service implements Playback.Callback {
     private final IBinder mMusicBinder = new MusicBinder();
     private QueueRepository mQueueRepository;
     private Playback mPlayback;
-
     QueueRepository.CurrentItemIndexChangedObserver mQueueIndexChangedObserver =
             new QueueRepository.CurrentItemIndexChangedObserver() {
                 @Override
@@ -59,6 +58,7 @@ public class MusicService extends Service implements Playback.Callback {
                     play();
                 }
             };
+    private boolean mIsBound;
 
     @Override
     public void onCreate() {
@@ -138,7 +138,6 @@ public class MusicService extends Service implements Playback.Callback {
         mPlayback.seekTo(position);
     }
 
-
     public void playPrev() {
         mPlayback.seekTo(0);
         mQueueRepository.skipQueuePosition(-1);
@@ -157,10 +156,20 @@ public class MusicService extends Service implements Playback.Callback {
         mPlayback.pause();
         mQueueRepository.clearCachedAudioPlaylist(this);
         updateWidget(false);
+
+        if (mIsBound) {
+            Intent mainActivityIntent = new Intent(this, MainActivity.class);
+            mainActivityIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            this.startActivity(mainActivityIntent);
+        }
     }
 
     public int getState() {
         return mPlayback.getState();
+    }
+
+    public int getCurrentPosition() {
+        return mPlayback.getCurrentStreamPosition();
     }
 
     private void buildNotification() {
@@ -179,6 +188,7 @@ public class MusicService extends Service implements Playback.Callback {
         builder.setLargeIcon(getLargeIcon());
         builder.setShowWhen(false);
         builder.setStyle(mediaStyle);
+        builder.setOngoing(isPlaying());
 
         // Setting the notification default intent (starting MainActivity)
         Intent resultIntent = new Intent(getApplicationContext(), PlayerActivity.class);
@@ -281,22 +291,31 @@ public class MusicService extends Service implements Playback.Callback {
 
             LogHelper.d(LOG_TAG, "Widget Updating!");
 
-            // Register an onClickListener
-            Intent clickIntent = new Intent(this.getApplicationContext(),
-                    MainActivity.class);
-
-            PendingIntent pendingIntent = PendingIntent.getActivity(
-                    getApplicationContext(), 0, clickIntent,
-                    PendingIntent.FLAG_UPDATE_CURRENT);
-            remoteViews.setOnClickPendingIntent(R.id.widgetParent, pendingIntent);
-
 
             if (showActive) {
+                // Register an onClickListener
+                Intent clickIntent = new Intent(this.getApplicationContext(),
+                        PlayerActivity.class);
+
+                PendingIntent pendingIntent = PendingIntent.getActivity(
+                        getApplicationContext(), 0, clickIntent,
+                        PendingIntent.FLAG_UPDATE_CURRENT);
+                remoteViews.setOnClickPendingIntent(R.id.widgetParent, pendingIntent);
+
                 //Show launch player view
                 remoteViews.setTextViewText(R.id.widgetSongTitle, mQueueRepository.getCurrentMusic().getmTitle());
                 remoteViews.setTextViewText(R.id.widgetArtistName, mQueueRepository.getCurrentMusic().getmArtist());
                 appWidgetManager.updateAppWidget(widgetId, remoteViews);
             } else {
+                // Register an onClickListener
+                Intent clickIntent = new Intent(this.getApplicationContext(),
+                        MainActivity.class);
+
+                PendingIntent pendingIntent = PendingIntent.getActivity(
+                        getApplicationContext(), 0, clickIntent,
+                        PendingIntent.FLAG_UPDATE_CURRENT);
+                remoteViews.setOnClickPendingIntent(R.id.widgetParent, pendingIntent);
+
                 remoteViews.setTextViewText(R.id.widgetSongTitle, getString(R.string.widget_inactive_string));
                 remoteViews.setTextViewText(R.id.widgetArtistName, "");
                 appWidgetManager.updateAppWidget(widgetId, remoteViews);
@@ -338,11 +357,13 @@ public class MusicService extends Service implements Playback.Callback {
 
     @Override
     public IBinder onBind(Intent intent) {
+        mIsBound = true;
         return mMusicBinder;
     }
 
     @Override
     public boolean onUnbind(Intent intent) {
+        mIsBound = false;
         return true;
     }
 

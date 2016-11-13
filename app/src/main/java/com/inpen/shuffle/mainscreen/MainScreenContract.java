@@ -1,6 +1,7 @@
 package com.inpen.shuffle.mainscreen;
 
 import android.content.Context;
+import android.support.v7.app.AppCompatActivity;
 
 import com.inpen.shuffle.model.database.MediaContract;
 import com.inpen.shuffle.utils.CustomTypes;
@@ -19,6 +20,8 @@ public interface MainScreenContract {
         void getPermissions();
 
         void onFabStateChanged(CustomTypes.MainFabState state);
+
+        AppCompatActivity getActivityContext();
     }
 
     interface ActivityActionsListener {

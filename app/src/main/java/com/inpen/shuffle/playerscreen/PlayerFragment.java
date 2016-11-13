@@ -35,7 +35,7 @@ public class PlayerFragment extends Fragment implements PlayerScreenContract.Pla
     @BindView(R.id.albumArt)
     ImageView mAlbumArt;
     @BindView(R.id.seekBar)
-    SeekBar seekbar;
+    SeekBar mSeekbar;
     @BindView(R.id.likeButton)
     ImageButton mLikeBtn;
     @BindView(R.id.dislikeButton)
@@ -48,9 +48,27 @@ public class PlayerFragment extends Fragment implements PlayerScreenContract.Pla
     LinearLayout mPlayerControlParent;
     CustomTypes.PlayerViewState mPlayerState = CustomTypes.PlayerViewState.PAUSED;
     private PlayerScreenContract.PlayerActionsListener mPresenter = null;
+    SeekBar.OnSeekBarChangeListener mSeekBarChangeListener = new SeekBar.OnSeekBarChangeListener() {
+
+        @Override
+        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+            if (fromUser) {
+                mPresenter.seekTo(progress);
+            }
+        }
+
+        @Override
+        public void onStartTrackingTouch(SeekBar seekBar) {
+            mPresenter.scheduleSeekBarUpdate(false);
+        }
+
+        @Override
+        public void onStopTrackingTouch(SeekBar seekBar) {
+            mPresenter.scheduleSeekBarUpdate(true);
+        }
+    };
     private boolean mIsNewLaunch = false;
     private Context mContext;
-
 
     public PlayerFragment() {
         // Required empty public constructor
@@ -70,13 +88,6 @@ public class PlayerFragment extends Fragment implements PlayerScreenContract.Pla
         if (getArguments() != null && savedInstanceState == null) {
             mIsNewLaunch = getArguments().getBoolean(EXTRA_IS_NEW_LAUNCH_KEY);
         }
-
-
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
     }
 
     @Override
@@ -87,6 +98,9 @@ public class PlayerFragment extends Fragment implements PlayerScreenContract.Pla
 
         ButterKnife.setDebug(true);
         ButterKnife.bind(this, view);
+
+        mSeekbar.setOnSeekBarChangeListener(mSeekBarChangeListener);
+
         return view;
     }
 
@@ -114,15 +128,15 @@ public class PlayerFragment extends Fragment implements PlayerScreenContract.Pla
         mContext = context;
     }
 
+    ///////////////////////////////////////////////////////////////////////////
+    // View listeners
+    ///////////////////////////////////////////////////////////////////////////
+
     @Override
     public void onDetach() {
         super.onDetach();
         mContext = null;
     }
-
-    ///////////////////////////////////////////////////////////////////////////
-    // View listeners
-    ///////////////////////////////////////////////////////////////////////////
 
     @OnClick(R.id.albumArt)
     public void albumArtClicked() {
@@ -158,6 +172,7 @@ public class PlayerFragment extends Fragment implements PlayerScreenContract.Pla
         mPresenter.onDisliked();
     }
 
+
     ///////////////////////////////////////////////////////////////////////////
     // Implementation for Contract Player view
     ///////////////////////////////////////////////////////////////////////////
@@ -180,6 +195,10 @@ public class PlayerFragment extends Fragment implements PlayerScreenContract.Pla
         }
 
         Glide.with(this).load(audioItem.getmAlbumArt()).placeholder(R.drawable.ic_loading_circle).into(mAlbumArt);
+
+        mSeekbar.setMax((int) audioItem.getmDuration());
+
+        getActivity().startPostponedEnterTransition();
     }
 
     @Override
@@ -234,6 +253,11 @@ public class PlayerFragment extends Fragment implements PlayerScreenContract.Pla
     public void showPlaying() {
         mSongDetailParent.setVisibility(View.VISIBLE);
         mPlayerControlParent.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void setSeekBarProgress(int progress) {
+        mSeekbar.setProgress(progress);
     }
 
     @Override

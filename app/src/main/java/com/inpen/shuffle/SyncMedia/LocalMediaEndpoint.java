@@ -61,8 +61,8 @@ public class LocalMediaEndpoint implements MediaEndpoint {
                 String album = cur.getString(COL_INDEX_ALBUM);
                 String artist = cur.getString(COL_INDEX_ARTIST);
                 long duration = cur.getLong(COL_INDEX_DURATION);
-                String albumKey = cur.getString(COL_INDEX_ALBUM_KEY);
-                String artistKey = cur.getString(COL_INDEX_ARTIST_KEY);
+                String albumKey = cur.getString(COL_INDEX_ALBUM_KEY).replaceAll("[^\\w\\s\\-_]", "");
+                String artistKey = cur.getString(COL_INDEX_ARTIST_KEY).replaceAll("[^\\w\\s\\-_]", "");
                 String albumArt = getAlbumArtForAlbum(cur.getInt(COL_INDEX_ALBUM_ID));
                 cv = new ContentValues();
                 cv.put(MediaContract.MediaEntry.COLUMN_SONG_ID, AudioItem.generateSongID(title, artist, duration));
@@ -103,13 +103,13 @@ public class LocalMediaEndpoint implements MediaEndpoint {
         return uri.toString();
         // If above doesn't work, use this instead
 //
-//        Cursor cursor = getContentResolver().query(MediaStore.AudioItem.Albums.EXTERNAL_CONTENT_URI,
-//                new String[]{MediaStore.AudioItem.AlbumColumns.ALBUM_ID, MediaStore.AudioItem.AlbumColumns.ALBUM_ART},
-//                MediaStore.AudioItem.Albums._ID + "=?",
+//        Cursor cursor = mContext.getContentResolver().query(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
+//                new String[]{MediaStore.Audio.Albums.ALBUM_ID, MediaStore.Audio.Albums.ALBUM_ART},
+//                MediaStore.Audio.Albums.ALBUM_ID + "=?",
 //                new String[]{String.valueOf(albumId)},
 //                null);
 //        if (cursor.moveToFirst()) {
-//            String path = cursor.getString(cursor.getColumnIndex(MediaStore.AudioItem.AlbumColumns.ALBUM_ART));
+//            String path = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.AlbumColumns.ALBUM_ART));
 //            return path;
 //        }
 //        return "";

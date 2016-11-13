@@ -30,4 +30,5 @@
     <dimen name="song_detail_elevation">5dp</dimen>
     <dimen name="suggestions_bottom_sheet_peek_height">100dp</dimen>
     <dimen name="text_margin">16dp</dimen>
+    <dimen name="suggestions_margin_tablet">30dp</dimen>
 </resources>

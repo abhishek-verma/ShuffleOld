@@ -69,8 +69,10 @@ public class SongListPresenter implements SongListScreenContract.SongListViewInt
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
 
-        if (data == null || !data.moveToFirst())
+        if (data == null || !data.moveToFirst()) {
+            updateViews(new ArrayList<AudioItem>());
             return;
+        }
 
         data.moveToFirst();
 

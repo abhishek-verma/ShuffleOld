@@ -26,5 +26,6 @@
     <string name="liked_songs_activity_title">Liked Songs</string>
     <string name="disliked_songs_activity_title">Disliked Songs</string>
     <string name="all_songs_activity_title">All Songs</string>
+    <string name="no_items_message">No Items Available</string>
 
 </resources>

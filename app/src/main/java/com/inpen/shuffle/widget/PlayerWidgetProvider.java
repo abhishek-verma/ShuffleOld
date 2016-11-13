@@ -12,6 +12,7 @@ import com.inpen.shuffle.R;
 import com.inpen.shuffle.mainscreen.MainActivity;
 import com.inpen.shuffle.model.AudioItem;
 import com.inpen.shuffle.model.QueueRepository;
+import com.inpen.shuffle.playerscreen.PlayerActivity;
 import com.inpen.shuffle.utils.CustomTypes;
 import com.inpen.shuffle.utils.LogHelper;
 
@@ -35,24 +36,21 @@ public class PlayerWidgetProvider extends AppWidgetProvider {
             LogHelper.d(LOG_TAG, "Widget Updating!");
             //TODO implement views
 
-            // Register an onClickListener
-            Intent clickIntent = new Intent(context,
-                    MainActivity.class);
-
             RemoteViews remoteViews = new RemoteViews(context.getPackageName(),
                     R.layout.player_widget);
-
-            PendingIntent pendingIntent = PendingIntent.getActivity(
-                    context, 0, clickIntent,
-                    PendingIntent.FLAG_UPDATE_CURRENT);
-            remoteViews.setOnClickPendingIntent(R.id.widgetParent, pendingIntent);
 
 
             final QueueRepository queueRepository = QueueRepository.getInstance();
             if (queueRepository.getState().equals(CustomTypes.RepositoryState.INITIALIZED)) {
-
-
                 LogHelper.d(LOG_TAG, "QueueRepo directly initialized, showing Media detail!");
+
+
+                // Register an onClickListener
+                Intent clickIntent = new Intent(context, PlayerActivity.class);
+                PendingIntent pendingIntent = PendingIntent.getActivity(
+                        context, 0, clickIntent,
+                        PendingIntent.FLAG_UPDATE_CURRENT);
+                remoteViews.setOnClickPendingIntent(R.id.widgetParent, pendingIntent);
 
                 // show music data
                 AudioItem item = queueRepository.getCurrentMusic();
@@ -61,6 +59,12 @@ public class PlayerWidgetProvider extends AppWidgetProvider {
                 appWidgetManager.updateAppWidget(widgetId, remoteViews);
             } else {
 
+                // Register an onClickListener
+                Intent clickIntent = new Intent(context, MainActivity.class);
+                PendingIntent pendingIntent = PendingIntent.getActivity(
+                        context, 0, clickIntent,
+                        PendingIntent.FLAG_UPDATE_CURRENT);
+                remoteViews.setOnClickPendingIntent(R.id.widgetParent, pendingIntent);
 
                 LogHelper.d(LOG_TAG, "MusicNot Playing, showing launch shuffle!");
 

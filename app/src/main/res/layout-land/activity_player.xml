@@ -1,24 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.inpen.shuffle.playerscreen.PlayerActivity">
 
+    <android.support.v4.widget.Space
+        android:id="@+id/centerView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_centerInParent="true" />
+
     <FrameLayout
         android:id="@+id/playerFragmentContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="@dimen/suggestions_bottom_sheet_peek_height" />
+        android:layout_alignEnd="@+id/centerView"
+        android:layout_alignParentStart="true"
+        android:transitionName="@string/shared_transition_name" />
 
 
     <FrameLayout
         android:id="@+id/suggestionsFragmentContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:behavior_hideable="false"
-        app:behavior_peekHeight="@dimen/suggestions_bottom_sheet_peek_height"
-        app:layout_behavior="@string/bottom_sheet_behavior" />
+        android:layout_alignParentEnd="true"
+        android:layout_alignStart="@+id/centerView" />
 
-</android.support.design.widget.CoordinatorLayout>
+</RelativeLayout>

@@ -9,6 +9,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.inpen.shuffle.R;
 import com.inpen.shuffle.utils.CustomTypes;
@@ -24,11 +25,12 @@ import static com.google.gson.internal.$Gson$Preconditions.checkNotNull;
 public class ItemsFragment extends Fragment implements MainScreenContract.ItemsView {
 
     private static final String EXTRA_INT_ITEM_TYPE = "item_type";
-
+    public ItemsAdapter mItemsAdapter;
     MainScreenContract.ItemsFragmentListener mActionsListener;
     @BindView(R.id.itemRecyclerView)
     RecyclerView mRecyclerView;
-    private ItemsAdapter mItemsAdapter;
+    @BindView(R.id.emptyView)
+    TextView mEmptyView;
     private CustomTypes.ItemType mItemType;
 
     public ItemsFragment() {
@@ -140,6 +142,14 @@ public class ItemsFragment extends Fragment implements MainScreenContract.ItemsV
     @Override
     public void showItems(List<Item> itemList) {
         mItemsAdapter.replaceData(itemList);
+
+        if (itemList == null || itemList.size() == 0) {
+            mRecyclerView.setVisibility(View.GONE);
+            mEmptyView.setVisibility(View.VISIBLE);
+        } else {
+            mRecyclerView.setVisibility(View.VISIBLE);
+            mEmptyView.setVisibility(View.GONE);
+        }
     }
 
     @Override

@@ -8,12 +8,16 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.inpen.shuffle.R;
 import com.inpen.shuffle.model.AudioItem;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 /**
  * A fragment representing a list of Items.
@@ -23,8 +27,11 @@ import java.util.List;
  */
 public class SongListFragment extends Fragment implements SongListScreenContract.SongListView {
 
+    @BindView(R.id.emptyView)
+    public TextView mEmptyView;
     private SongListScreenContract.SongListViewInteractionListener mPresenter = new SongListPresenter();
     private SongListViewAdapter mSongListAdapter;
+    private RecyclerView mRecyclerView;
 
     public SongListFragment() {
     }
@@ -48,6 +55,8 @@ public class SongListFragment extends Fragment implements SongListScreenContract
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_song_list, container, false);
 
+        ButterKnife.bind(this, view);
+
         mSongListAdapter = new SongListViewAdapter(
                 new ArrayList<AudioItem>(),
                 new SongListFragment.OnListFragmentInteractionListener() {
@@ -60,14 +69,14 @@ public class SongListFragment extends Fragment implements SongListScreenContract
         // Set the adapter
         if (view instanceof RecyclerView) {
             Context context = view.getContext();
-            RecyclerView recyclerView = (RecyclerView) view;
-            recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            recyclerView.setAdapter(mSongListAdapter);
+            mRecyclerView = (RecyclerView) view;
+            mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
+            mRecyclerView.setAdapter(mSongListAdapter);
         } else {
-            RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.songList);
+            mRecyclerView = (RecyclerView) view.findViewById(R.id.songList);
             Context context = view.getContext();
-            recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            recyclerView.setAdapter(mSongListAdapter);
+            mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
+            mRecyclerView.setAdapter(mSongListAdapter);
         }
 
         mPresenter.initialize(getLoaderManager(),
@@ -86,6 +95,15 @@ public class SongListFragment extends Fragment implements SongListScreenContract
     @Override
     public void showData(List<AudioItem> audioItemList) {
         mSongListAdapter.replaceData(audioItemList);
+
+
+        if (audioItemList == null || audioItemList.size() == 0) {
+            mRecyclerView.setVisibility(View.GONE);
+            mEmptyView.setVisibility(View.VISIBLE);
+        } else {
+            mRecyclerView.setVisibility(View.VISIBLE);
+            mEmptyView.setVisibility(View.GONE);
+        }
     }
 
     public interface OnListFragmentInteractionListener {

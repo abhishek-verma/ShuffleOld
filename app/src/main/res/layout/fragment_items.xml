@@ -1,15 +1,19 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/itemFragmentParent"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/lt_black"
     tools:context="com.inpen.shuffle.mainscreen.ItemsFragment">
 
+    <TextView
+        android:id="@+id/emptyView"
+        style="@style/EmptyView"
+        android:text="@string/no_items_message" />
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/itemRecyclerView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-    </android.support.v7.widget.RecyclerView>
+        android:layout_height="match_parent" />
 
 </FrameLayout>

@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.os.Handler;
 import android.os.IBinder;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.media.session.PlaybackStateCompat;
@@ -28,10 +29,23 @@ public class PlayerFragmentPresenter implements PlayerScreenContract.PlayerActio
     QueueRepository mQueueRepository;
 
     private MusicService mMusicService;
-    private boolean mIsServiceBound = false;
     private boolean mIsNewLaunch = false;
+    private boolean mIsServiceBound = false;
+    private boolean mIsSeekBarUpdateTaskRunning = false;
+    private Handler mSeekBarUpdateHandler = new Handler();
+    private Runnable mUpdateSeekBarTask = new Runnable() {
+        @Override
+        public void run() {
 
+            // Updating progress bar
+            int progress = mMusicService.getCurrentPosition();
 
+            mView.setSeekBarProgress(progress);
+
+            if (mIsSeekBarUpdateTaskRunning)
+                mSeekBarUpdateHandler.postDelayed(this, 100);
+        }
+    };
     /**
      * Setting the MusicService Binding
      */
@@ -54,14 +68,17 @@ public class PlayerFragmentPresenter implements PlayerScreenContract.PlayerActio
                 else
                     mView.setState(CustomTypes.PlayerViewState.PAUSED);
             }
+
+            scheduleSeekBarUpdate(true);
         }
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
             mIsServiceBound = false;
+
+            scheduleSeekBarUpdate(false);
         }
     };
-
     /**
      * Setting the broadcast receiver to intercept broadcast msg from MusicService
      */
@@ -75,13 +92,14 @@ public class PlayerFragmentPresenter implements PlayerScreenContract.PlayerActio
                 case PlaybackStateCompat.STATE_STOPPED:
                 case PlaybackStateCompat.STATE_NONE:
                     mView.setState(CustomTypes.PlayerViewState.PAUSED);
+                    scheduleSeekBarUpdate(false);
                     break;
                 default:
                     mView.setState(CustomTypes.PlayerViewState.PLAYING);
+                    scheduleSeekBarUpdate(true);
             }
         }
     };
-
 
     public PlayerFragmentPresenter(Context context,
                                    PlayerScreenContract.PlayerView view) {
@@ -246,10 +264,26 @@ public class PlayerFragmentPresenter implements PlayerScreenContract.PlayerActio
         }
 
         mQueueRepository.removeCurrentItemIndexChangedObserver(this);
+
+        scheduleSeekBarUpdate(false);
     }
 
     @Override
     public void onQueueIndexChanged() {
         updateViews();
     }
+
+    @Override
+    public void scheduleSeekBarUpdate(boolean enable) {
+        if (mIsServiceBound
+                && enable
+                && !mIsSeekBarUpdateTaskRunning) {
+            mIsSeekBarUpdateTaskRunning = true;
+            mSeekBarUpdateHandler.post(mUpdateSeekBarTask);
+        } else {
+            mIsSeekBarUpdateTaskRunning = false;
+            mSeekBarUpdateHandler.removeCallbacks(mUpdateSeekBarTask);
+        }
+    }
+
 }

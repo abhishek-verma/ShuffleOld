@@ -3,7 +3,9 @@ package com.inpen.shuffle.mainscreen;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityOptionsCompat;
 
+import com.inpen.shuffle.R;
 import com.inpen.shuffle.model.QueueRepository;
 import com.inpen.shuffle.model.SelectedItemsRepository;
 import com.inpen.shuffle.playback.MusicService;
@@ -84,7 +86,12 @@ public class MainPresenter implements MainScreenContract.ActivityActionsListener
                             //Starting player activity
                             Intent playerActivityIntent = new Intent(context, PlayerActivity.class);
                             playerActivityIntent.putExtra(PlayerActivity.EXTRA_BOOLEAN_NEW_LAUNCH, true);
-                            context.startActivity(playerActivityIntent);
+                            ActivityOptionsCompat activityOptionsCompat =
+                                    ActivityOptionsCompat.makeSceneTransitionAnimation(
+                                            mMainView.getActivityContext(),
+                                            mMainView.getActivityContext().findViewById(R.id.fab),
+                                            mMainView.getActivityContext().getString(R.string.shared_transition_name));
+                            context.startActivity(playerActivityIntent, activityOptionsCompat.toBundle());
                         } else {
                             LogHelper.e(LOG_TAG, "Something wrong happened while curating queue!");
                         }

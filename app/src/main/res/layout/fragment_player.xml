@@ -1,7 +1,9 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/playerFragmentParent"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:transitionName="@string/shared_transition_name"
     tools:context="com.inpen.shuffle.playerscreen.PlayerFragment">
 
     <ImageView
