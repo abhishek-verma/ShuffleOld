@@ -8,7 +8,7 @@ public class Item {
 
     public static String SELECT_ALL_ITEM_VIEW_ID = "select_all";
     public static String SELECT_ALL_ITEM_VIEW_TITLE = "SELECT ALL";
-    public static String DESELECT_ALL_ITEM_VIEW_TITLE = "DESELECT ALL";//TODO change title to this if first item is selected
+    public static String DESELECT_ALL_ITEM_VIEW_TITLE = "DESELECT ALL";
     public static String SELECT_ALL_ITEM_VIEW_IMAGEPATH = "";
 
     private String mId;

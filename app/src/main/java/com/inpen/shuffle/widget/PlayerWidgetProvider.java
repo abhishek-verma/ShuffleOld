@@ -34,7 +34,6 @@ public class PlayerWidgetProvider extends AppWidgetProvider {
 
 
             LogHelper.d(LOG_TAG, "Widget Updating!");
-            //TODO implement views
 
             RemoteViews remoteViews = new RemoteViews(context.getPackageName(),
                     R.layout.player_widget);
