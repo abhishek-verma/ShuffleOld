@@ -53,7 +53,7 @@ public class QueueHelper {
             MediaEntry.TABLE_NAME + "." + MediaEntry.COLUMN_SONG_ID,
             PlaylistsEntry.TABLE_NAME + "." + PlaylistsEntry.COLUMN_PLAYLIST_NAME
     };
-    private static Context mContext;
+    private Context mContext;
 
     public QueueHelper(Context context) {
         mContext = context;
@@ -180,8 +180,10 @@ public class QueueHelper {
     private void shuffleSongQueue(List<AudioItem> audioItemList) {
         //TODO implement custom shuffle algo
         //THAT TAKES INTO ACCOUNT THE LIKED AND DISLIKED SONGS
+        /*
         List<AudioItem> likedSongsList = getLikedSongs();
         List<AudioItem> dislikedSongsList = getDislikedSongs();
+        */
         Collections.shuffle(audioItemList);
     }
 
@@ -211,9 +213,12 @@ public class QueueHelper {
             while (cursor.moveToNext());
 
         } else {
+            assert cursor != null;
+            cursor.close();
             return new ArrayList<AudioItem>();
         }
 
+        cursor.close();
         return audioItemList;
     }
 
@@ -243,9 +248,13 @@ public class QueueHelper {
             while (cursor.moveToNext());
 
         } else {
+            if (cursor != null) {
+                cursor.close();
+            }
             return new ArrayList<>();
         }
 
+        cursor.close();
         return audioItemList;
     }
 

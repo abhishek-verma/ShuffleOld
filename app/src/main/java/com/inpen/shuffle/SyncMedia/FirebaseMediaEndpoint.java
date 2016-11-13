@@ -23,28 +23,13 @@ import java.util.Vector;
 public class FirebaseMediaEndpoint implements MediaEndpoint {
 
     public static final String FIREBASE_USERS_PARENT_KEY = "users";
-    public static final String FIREBASE_USER_KEY = "user";
     public static final String FIREBASE_EMAIL_KEY = "email";
     public static final String FIREBASE_USER_NAME_KEY = "name";
     public static final String FIREBASE_IS_PRO_KEY = "isPro";
     public static final String FIREBASE_PLAYLISTS_KEY = "playlists";
     private static final String LOG_TAG = LogHelper.makeLogTag(FirebaseMediaEndpoint.class);
     Context mContext;
-    ValueEventListener testListener = new ValueEventListener() {
-        @Override
-        public void onDataChange(DataSnapshot dataSnapshot) {
-            // Get Post object and use the values to update the UI
-//            String post = dataSnapshot.getValue();
-            // ...
-        }
 
-        @Override
-        public void onCancelled(DatabaseError databaseError) {
-            // Getting Post failed, log a message
-            LogHelper.w(LOG_TAG, "loadPost:onCancelled", databaseError.toException());
-            // ...
-        }
-    };
     ValueEventListener dataListener = new ValueEventListener() {
 
         @Override
@@ -132,6 +117,8 @@ public class FirebaseMediaEndpoint implements MediaEndpoint {
                         .child(cursor.getString(1)).setValue(true);
             } while (cursor.moveToNext());
         }
+
+        cursor.close();
     }
 
     private void downloadFromFirebase() {

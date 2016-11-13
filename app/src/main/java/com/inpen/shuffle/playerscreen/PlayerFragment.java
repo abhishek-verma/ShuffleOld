@@ -172,6 +172,11 @@ public class PlayerFragment extends Fragment implements PlayerScreenContract.Pla
         mPresenter.onDisliked();
     }
 
+    @OnClick(R.id.shareButton)
+    public void shareButtonClicked() {
+        mPresenter.onShareClicked();
+    }
+
 
     ///////////////////////////////////////////////////////////////////////////
     // Implementation for Contract Player view

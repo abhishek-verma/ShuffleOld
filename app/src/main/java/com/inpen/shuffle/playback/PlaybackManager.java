@@ -28,6 +28,8 @@ import com.inpen.shuffle.utils.LogHelper;
 
 // The class is kept for future implementations
 /**
+ *  Class taken from: https://github.com/googlesamples/android-UniversalMusicPlayer
+ *
  * Manage the interactions among the container service, the queue manager and the actual playback.
  */
 public class PlaybackManager implements Playback.Callback {

@@ -86,11 +86,6 @@ public class SongListFragment extends Fragment implements SongListScreenContract
         return view;
     }
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
-    }
-
 
     @Override
     public void showData(List<AudioItem> audioItemList) {

@@ -41,10 +41,12 @@ public class MainPresenter implements MainScreenContract.ActivityActionsListener
 
         if (mSelectedItemsRepository.getmSelectedItemList().size() != 0) {
             mMainView.onFabStateChanged(CustomTypes.MainFabState.SHUFFLE);
-        } else if (false) {
-            //TODO if player service active/running set state as player
-            mMainView.onFabStateChanged(CustomTypes.MainFabState.PLAYER);
-        } else {
+        }
+//        else if (false) {
+//            //TODO if player service active/running set state as player
+//            mMainView.onFabStateChanged(CustomTypes.MainFabState.PLAYER);
+//        }
+        else {
             mMainView.onFabStateChanged(CustomTypes.MainFabState.HIDDEN);
         }
 

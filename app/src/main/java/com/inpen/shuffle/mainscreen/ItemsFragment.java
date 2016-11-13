@@ -1,6 +1,5 @@
 package com.inpen.shuffle.mainscreen;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -120,18 +119,6 @@ public class ItemsFragment extends Fragment implements MainScreenContract.ItemsV
         mRecyclerView.setAdapter(mItemsAdapter);
 
         return view;
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-
     }
 
     @Override

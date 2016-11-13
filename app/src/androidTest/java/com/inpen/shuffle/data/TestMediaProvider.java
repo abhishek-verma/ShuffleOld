@@ -187,6 +187,8 @@ public class TestMediaProvider {
             i++;
         } while (cursor.moveToNext());
 
+        cursor.close();
+
     }
 
     @Test
@@ -220,6 +222,7 @@ public class TestMediaProvider {
             i++;
         } while (cursor.moveToNext());
 
+        cursor.close();
     }
 
 

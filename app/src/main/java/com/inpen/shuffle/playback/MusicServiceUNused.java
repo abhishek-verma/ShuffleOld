@@ -36,8 +36,12 @@ import com.inpen.shuffle.utils.LogHelper;
 
 import java.lang.ref.WeakReference;
 
-// Not Used Currently, MusicServiceUnused is used instead
-// However the class is kept for future implementations
+/**
+ * Class taken from: https://github.com/googlesamples/android-UniversalMusicPlayer
+ * <p>
+ * // Not Used Currently, MusicServiceUnused is used instead
+ * // However the class is kept for future implementations
+ */
 public class MusicServiceUnused extends Service implements
         PlaybackManager.PlaybackServiceCallback {
 

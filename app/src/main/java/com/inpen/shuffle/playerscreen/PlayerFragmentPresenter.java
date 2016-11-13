@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.net.Uri;
 import android.os.Handler;
 import android.os.IBinder;
 import android.support.v4.content.LocalBroadcastManager;
@@ -249,6 +250,20 @@ public class PlayerFragmentPresenter implements PlayerScreenContract.PlayerActio
                     }
                 });
 
+    }
+
+    @Override
+    public void onShareClicked() {
+
+        Uri imageUri = Uri.parse(mQueueRepository.getCurrentMusic().getmAlbumArt());
+
+        Intent shareIntent = new Intent();
+        shareIntent.setAction(Intent.ACTION_SEND);
+        shareIntent.putExtra(Intent.EXTRA_TEXT, mQueueRepository.getCurrentMusic().getmTitle());
+        shareIntent.putExtra(Intent.EXTRA_STREAM, imageUri);
+        shareIntent.setType("image/*");
+        shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        mView.getActivityContext().startActivity(Intent.createChooser(shareIntent, "send"));
     }
 
     @Override

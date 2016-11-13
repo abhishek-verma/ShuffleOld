@@ -23,10 +23,19 @@
 # This rule will properly ProGuard all the model classes in
 # the package com.yourcompany.models. Modify to fit the structure
 # of your app.
--keepclassmembers class com.yourcompany.models.** {
+-keepclassmembers class com.inpen.shuffle.** {
   *;
 }
 
 #For firebase auth
 -keepattributes Signature
 -keepattributes *Annotation*
+
+#For glide
+-keep public class * implements com.bumptech.glide.module.GlideModule
+-keep public enum com.bumptech.glide.load.resource.bitmap.ImageHeaderParser$** {
+  **[] $VALUES;
+  public *;
+}
+-keepresourcexmlelements manifest/application/meta-data@value=GlideModule
+

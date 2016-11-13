@@ -104,7 +104,7 @@ public class SelectedItemsRepository {
         LogHelper.v(LOG_TAG, "addItems( " + items.toString() + " )");
 
         if (mSelectedItemList.size() == 0) {
-            LogHelper.d("SelectedItemRepository 1st item being inserted of type: " + mItemType);
+            LogHelper.d(LOG_TAG, "SelectedItemRepository 1st item being inserted of type: " + mItemType);
             notifyIsRepositoryEmptyObservers(false);
         }
 
@@ -119,7 +119,7 @@ public class SelectedItemsRepository {
     public void addItem(Item item) {
         LogHelper.v(LOG_TAG, "addItem( " + item.toString() + " )");
         if (mSelectedItemList.size() == 0) {
-            LogHelper.d("SelectedItemRepository 1st item being inserted of type: " + mItemType);
+            LogHelper.d(LOG_TAG, "SelectedItemRepository 1st item being inserted of type: " + mItemType);
             notifyIsRepositoryEmptyObservers(false);
         }
 
@@ -158,7 +158,7 @@ public class SelectedItemsRepository {
     }
 
     private void notifyIsRepositoryEmptyObservers(boolean isEmpty) {
-        LogHelper.d("notifyIsRepositoryEmptyObservers isEmpty: " + isEmpty);
+        LogHelper.d(LOG_TAG, "notifyIsRepositoryEmptyObservers isEmpty: " + isEmpty);
         if (mIsRepositoryEmptyObserverList == null)
             return;
 

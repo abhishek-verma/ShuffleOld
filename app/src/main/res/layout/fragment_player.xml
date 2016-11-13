@@ -13,6 +13,7 @@
         android:layout_centerInParent="true"
         android:adjustViewBounds="true"
         android:background="@color/lt_black"
+        android:contentDescription="@string/album_art"
         android:scaleType="centerCrop"
         android:tint="@color/translucent_black" />
 
@@ -111,7 +112,7 @@
             android:layout_centerVertical="true"
             android:alpha="0.4"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Like"
+            android:contentDescription="@string/like"
             android:src="@drawable/ic_thumb_up"
             android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
 
@@ -123,7 +124,7 @@
             android:layout_centerVertical="true"
             android:layout_toEndOf="@id/likeButton"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Share"
+            android:contentDescription="@string/share"
             android:src="@drawable/ic_share"
             android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
 
@@ -135,7 +136,7 @@
             android:layout_centerVertical="true"
             android:alpha="0.4"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Dislike"
+            android:contentDescription="@string/dislike"
             android:src="@drawable/ic_thumb_down"
             android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
     </RelativeLayout>

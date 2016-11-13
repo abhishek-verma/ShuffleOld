@@ -66,11 +66,6 @@ public class SuggestionsFragment extends Fragment implements PlayerScreenContrac
     }
 
     @Override
-    public void onDetach() {
-        super.onDetach();
-    }
-
-    @Override
     public Context getActivityContext() {
         return getContext();
     }

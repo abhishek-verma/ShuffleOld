@@ -42,6 +42,8 @@ import com.inpen.shuffle.utils.ResourceHelper;
 
 // The class is kept for future implementations
 /**
+ *  Class taken from: https://github.com/googlesamples/android-UniversalMusicPlayer
+ *
  * Keeps track of a notification and updates it automatically for a given
  * MediaSession. Maintaining a visible notification (usually) guarantees that the music service
  * won't be killed during playback.

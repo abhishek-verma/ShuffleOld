@@ -36,6 +36,8 @@ import static android.media.MediaPlayer.OnPreparedListener;
 import static android.media.MediaPlayer.OnSeekCompleteListener;
 
 /**
+ *  Class taken from: https://github.com/googlesamples/android-UniversalMusicPlayer
+ *
  * A class that implements local media playback using {@link android.media.MediaPlayer}
  */
 public class Playback implements AudioManager.OnAudioFocusChangeListener,

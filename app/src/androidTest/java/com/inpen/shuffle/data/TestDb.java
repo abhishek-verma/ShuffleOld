@@ -93,6 +93,7 @@ public class TestDb {
             tableNameHashSet.remove(c.getString(0));
         } while (c.moveToNext());
 
+        c.close();
         // if this fails, it means that your database doesn't contain both the location entry
         // and weather entry tables
         assertTrue("Error: Your database was created without the tables",
@@ -132,6 +133,7 @@ public class TestDb {
             existingColumns.add(columnName);
         } while (c.moveToNext());
 
+        c.close();
         // if this fails, it means that your database doesn't contain all of the required location
         // entry columns
         assertTrue("Error: The database doesn't contain all of the required movie entry columns," +
@@ -163,6 +165,7 @@ public class TestDb {
             existingColumns.add(columnName);
         } while (c.moveToNext());
 
+        c.close();
         // if this fails, it means that your database doesn't contain all of the required location
         // entry columns
         assertTrue("Error: The database doesn't contain all of the required movie entry columns," +

@@ -63,6 +63,8 @@ public interface PlayerScreenContract {
         void onStop();
 
         void scheduleSeekBarUpdate(boolean enable);
+
+        void onShareClicked();
     }
 
     interface SuggestionsView {
