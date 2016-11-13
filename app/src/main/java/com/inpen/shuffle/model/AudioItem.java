@@ -33,10 +33,10 @@ public class AudioItem implements Serializable {
         // Math.min to prevent endIndex > length()
         // which throws IndexOutOfBondsException
         String durationString = String.valueOf(duration);
-        return new StringBuffer(title.substring(0, Math.min(title.length(), 10)))
-                .append(artist.substring(0, Math.min(artist.length(), 5)))
+        return new StringBuffer(title.substring(0, Math.min(title.length(), 10)).replaceAll("[^\\w\\s\\-_]", ""))
+                .append(artist.substring(0, Math.min(artist.length(), 5)).replaceAll("[^\\w\\s\\-_]", ""))
                 .append(durationString
-                        .substring(0, Math.min(durationString.length(), 5)))
+                        .substring(0, Math.min(durationString.length(), 5)).replaceAll("[^\\w\\s\\-_]", ""))
                 .toString();
     }
 

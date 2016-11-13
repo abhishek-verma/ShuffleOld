@@ -11,12 +11,17 @@
         android:layout_centerInParent="true"
         android:adjustViewBounds="true"
         android:background="@color/lt_black"
-        android:scaleType="centerCrop" />
+        android:scaleType="centerCrop"
+        android:tint="@color/translucent_black" />
 
     <LinearLayout
         android:id="@+id/songDetailsParent"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="40dp"
+        android:layout_marginTop="40dp"
+        android:background="@color/colorAccent"
+        android:elevation="@dimen/song_detail_elevation"
         android:orientation="vertical"
         android:padding="20dp"
         android:visibility="gone">
@@ -25,23 +30,22 @@
             android:id="@+id/songTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
             android:ellipsize="marquee"
             android:maxLines="2"
             android:padding="5dp"
             android:text="Dummy Song Title"
+            android:textColor="@color/white"
             android:textSize="@dimen/font_size_player_song_name" />
 
         <TextView
             android:id="@+id/artistName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_below="@+id/songTitle"
             android:ellipsize="marquee"
             android:maxLines="1"
             android:padding="5dp"
             android:text="Dummy Artist name"
+            android:textColor="@color/white"
             android:textSize="@dimen/font_size_player_artist_name" />
     </LinearLayout>
 
@@ -103,6 +107,7 @@
             android:layout_height="@dimen/image_button_touch_target_size"
             android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
+            android:alpha="0.4"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="Like"
             android:src="@drawable/ic_thumb_up"
@@ -126,6 +131,7 @@
             android:layout_height="@dimen/image_button_touch_target_size"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
+            android:alpha="0.4"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="Dislike"
             android:src="@drawable/ic_thumb_down"
@@ -136,7 +142,6 @@
         android:id="@+id/seekBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@id/playerActionsBar"
-        android:layout_marginBottom="@dimen/seekbar_bottom_margin" />
+        android:layout_above="@id/playerActionsBar" />
 
 </RelativeLayout>

@@ -197,8 +197,9 @@ public class QueueRepository {
 
     public void clearCachedAudioPlaylist(Context context) {
 
+        mCurrentState = RepositoryState.NON_INITIALIZED;
         mPlayingQueue.clear();
-        mCurrentTrackIndex = 0;
+        mCurrentTrackIndex = -1;
 
         SharedPreferences.Editor editor = getmPreferences(context).edit();
         editor.clear();

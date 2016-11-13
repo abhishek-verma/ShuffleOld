@@ -50,9 +50,10 @@ public class MediaContract {
             return CONTENT_URI.buildUpon().appendPath(songId).build();
         }
 
-        public static Uri buildSongByPlaylistUri() {
+        public static Uri buildSongByPlaylistUri(String playlist) {
             return CONTENT_URI.buildUpon()
                     .appendPath(PATH_BY_PLAYLIST)
+                    .appendPath(playlist)
                     .build();
         }
 

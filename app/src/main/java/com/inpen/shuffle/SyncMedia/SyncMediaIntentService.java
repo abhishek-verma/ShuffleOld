@@ -29,7 +29,14 @@ public class SyncMediaIntentService extends IntentService {
                 LogHelper.d(LOG_TAG, "Local media synced, Songs added: " + songsAddedCount);
             }
         });
-        // TODO sync data from Firebase
+
+        FirebaseMediaEndpoint firebaseMediaEndpoint = new FirebaseMediaEndpoint(this);
+        firebaseMediaEndpoint.syncMedia(new MediaEndpoint.Callback() {
+            @Override
+            public void onDataSynced(int songsAddedCount) {
+                LogHelper.d(LOG_TAG, "Firebase media synced, Songs added: " + songsAddedCount);
+            }
+        });
     }
 
 

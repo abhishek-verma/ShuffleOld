@@ -15,5 +15,16 @@
     <string name="previous_song">Previous Song</string>
     <string name="resume_song">Resume</string>
     <string name="next_song">Next Song</string>
+    <string name="sign_out">Sign out</string>
+    <string name="nav_bar_greeting">Hey There!</string>
+    <string name="songs_string">Songs</string>
+    <string name="disliked_string">Disliked</string>
+    <string name="liked_string">Liked</string>
+    <string name="openDrawer">Open Drawer</string>
+    <string name="closeDrawer">Close Drawer</string>
+    <string name="widget_inactive_string">Launch Shuffle</string>
+    <string name="liked_songs_activity_title">Liked Songs</string>
+    <string name="disliked_songs_activity_title">Disliked Songs</string>
+    <string name="all_songs_activity_title">All Songs</string>
 
 </resources>

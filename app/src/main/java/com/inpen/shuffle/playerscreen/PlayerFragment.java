@@ -12,6 +12,7 @@ import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.inpen.shuffle.R;
 import com.inpen.shuffle.model.AudioItem;
 import com.inpen.shuffle.utils.CustomTypes;
@@ -48,6 +49,7 @@ public class PlayerFragment extends Fragment implements PlayerScreenContract.Pla
     CustomTypes.PlayerViewState mPlayerState = CustomTypes.PlayerViewState.PAUSED;
     private PlayerScreenContract.PlayerActionsListener mPresenter = null;
     private boolean mIsNewLaunch = false;
+    private Context mContext;
 
 
     public PlayerFragment() {
@@ -65,10 +67,16 @@ public class PlayerFragment extends Fragment implements PlayerScreenContract.Pla
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
+        if (getArguments() != null && savedInstanceState == null) {
             mIsNewLaunch = getArguments().getBoolean(EXTRA_IS_NEW_LAUNCH_KEY);
         }
 
+
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
     }
 
     @Override
@@ -102,11 +110,14 @@ public class PlayerFragment extends Fragment implements PlayerScreenContract.Pla
     public void onAttach(Context context) {
 
         super.onAttach(context);
+
+        mContext = context;
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
+        mContext = null;
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -136,6 +147,17 @@ public class PlayerFragment extends Fragment implements PlayerScreenContract.Pla
         setState(CustomTypes.PlayerViewState.PLAYING);
         mPresenter.playNext();
     }
+
+    @OnClick(R.id.likeButton)
+    public void likeButtonClicked() {
+        mPresenter.onLiked();
+    }
+
+    @OnClick(R.id.dislikeButton)
+    public void dislikeButtonClicked() {
+        mPresenter.onDisliked();
+    }
+
     ///////////////////////////////////////////////////////////////////////////
     // Implementation for Contract Player view
     ///////////////////////////////////////////////////////////////////////////
@@ -151,16 +173,33 @@ public class PlayerFragment extends Fragment implements PlayerScreenContract.Pla
         mTitleTextView.setText(audioItem.getmTitle());
         mArtistTextView.setText(audioItem.getmArtist());
 
+        if (playerAudioItemEnvelop.isLiked) {
+            mLikeBtn.setAlpha(1f);
+        } else if (playerAudioItemEnvelop.isDisliked) {
+            mLikeBtn.setAlpha(1f);
+        }
+
+        Glide.with(this).load(audioItem.getmAlbumArt()).placeholder(R.drawable.ic_loading_circle).into(mAlbumArt);
     }
 
-    private void showPaused() {
-        mSongDetailParent.setVisibility(View.GONE);
-        mPlayerControlParent.setVisibility(View.VISIBLE);
+    @Override
+    public void showLiked(boolean enabled) {
+        if (enabled) {
+            mLikeBtn.setAlpha(1f);
+            mDislikeBtn.setAlpha(0.4f);
+        } else {
+            mLikeBtn.setAlpha(0.4f);
+        }
     }
 
-    public void showPlaying() {
-        mSongDetailParent.setVisibility(View.VISIBLE);
-        mPlayerControlParent.setVisibility(View.GONE);
+    @Override
+    public void showDisliked(boolean enabled) {
+        if (enabled) {
+            mLikeBtn.setAlpha(0.4f);
+            mDislikeBtn.setAlpha(1f);
+        } else {
+            mDislikeBtn.setAlpha(0.4f);
+        }
     }
 
     @Override
@@ -187,8 +226,18 @@ public class PlayerFragment extends Fragment implements PlayerScreenContract.Pla
         }
     }
 
+    private void showPaused() {
+        mSongDetailParent.setVisibility(View.GONE);
+        mPlayerControlParent.setVisibility(View.VISIBLE);
+    }
+
+    public void showPlaying() {
+        mSongDetailParent.setVisibility(View.VISIBLE);
+        mPlayerControlParent.setVisibility(View.GONE);
+    }
+
     @Override
     public Context getActivityContext() {
-        return getContext();
+        return mContext;
     }
 }

@@ -33,6 +33,10 @@ public class PlayerActivity extends AppCompatActivity {
 
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.playerFragmentContainer, playerFragment).commit();
+
+            SuggestionsFragment suggestionsFragment = SuggestionsFragment.newInstance();
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.suggestionsFragmentContainer, suggestionsFragment).commit();
         }
     }
 

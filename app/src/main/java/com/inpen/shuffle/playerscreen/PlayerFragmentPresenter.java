@@ -14,12 +14,14 @@ import com.inpen.shuffle.model.QueueRepository;
 import com.inpen.shuffle.playback.MusicService;
 import com.inpen.shuffle.utils.CustomTypes;
 import com.inpen.shuffle.utils.LogHelper;
+import com.inpen.shuffle.utils.PlaylistHelper;
+import com.inpen.shuffle.utils.StaticStrings;
 
 /**
  * Created by Abhishek on 11/9/2016.
  */
 
-public class PlayerFragmentPresenter implements PlayerScreenContract.PlayerActionsListener {
+public class PlayerFragmentPresenter implements PlayerScreenContract.PlayerActionsListener, QueueRepository.CurrentItemIndexChangedObserver {
 
     private static final String LOG_TAG = LogHelper.makeLogTag(PlayerFragmentPresenter.class);
     private final PlayerScreenContract.PlayerView mView;
@@ -99,12 +101,7 @@ public class PlayerFragmentPresenter implements PlayerScreenContract.PlayerActio
             });
         }
 
-        mQueueRepository.addCurrentItemIndexChangedObserver(new QueueRepository.CurrentItemIndexChangedObserver() {
-            @Override
-            public void onQueueIndexChanged() {
-                updateViews();
-            }
-        });
+        mQueueRepository.addCurrentItemIndexChangedObserver(this);
 
         //Register Broadcast receiver for PlayerState
         LocalBroadcastManager
@@ -120,8 +117,36 @@ public class PlayerFragmentPresenter implements PlayerScreenContract.PlayerActio
 
     @Override
     public void updateViews() {
-        PlayerAudioItemEnvelop playerAudioItemEnvelop
+        final PlayerAudioItemEnvelop playerAudioItemEnvelop
                 = new PlayerAudioItemEnvelop(mQueueRepository.getCurrentMusic());
+
+
+        mView.showLiked(false);
+        mView.showDisliked(false);
+
+        PlaylistHelper.isAudioInPlaylist(StaticStrings.PlAYLIST_NAME_LIKED,
+                mQueueRepository.getCurrentMusic().getmSongID(),
+                mView.getActivityContext(),
+                new PlaylistHelper.Callback() {
+                    @Override
+                    public void isInPlaylist(boolean result) {
+                        if (result) {
+                            mView.showLiked(true);
+                        }
+                    }
+                });
+        PlaylistHelper.isAudioInPlaylist(StaticStrings.PlAYLIST_NAME_DISLIKED,
+                mQueueRepository.getCurrentMusic().getmSongID(),
+                mView.getActivityContext(),
+                new PlaylistHelper.Callback() {
+                    @Override
+                    public void isInPlaylist(boolean result) {
+                        if (result) {
+                            mView.showDisliked(true);
+                        }
+                    }
+                });
+
         mView.showData(playerAudioItemEnvelop);
 
     }
@@ -163,11 +188,48 @@ public class PlayerFragmentPresenter implements PlayerScreenContract.PlayerActio
 
     @Override
     public void onLiked() {
+        final String audioId = mQueueRepository.getCurrentMusic().getmSongID();
+        LogHelper.d(LOG_TAG, audioId + " liked!");
 
+        PlaylistHelper.isAudioInPlaylist(StaticStrings.PlAYLIST_NAME_LIKED,
+                audioId,
+                mView.getActivityContext(),
+                new PlaylistHelper.Callback() {
+                    @Override
+                    public void isInPlaylist(boolean result) {
+                        if (result) {
+                            PlaylistHelper.removeAudioFromPlaylist(StaticStrings.PlAYLIST_NAME_LIKED, audioId, mView.getActivityContext());
+                            mView.showLiked(false);
+                        } else {
+                            PlaylistHelper.removeAudioFromPlaylist(StaticStrings.PlAYLIST_NAME_DISLIKED, audioId, mView.getActivityContext());
+                            PlaylistHelper.insertAudioIntoPlaylist(StaticStrings.PlAYLIST_NAME_LIKED, audioId, mView.getActivityContext());
+                            mView.showLiked(true);
+                        }
+                    }
+                });
     }
 
     @Override
     public void onDisliked() {
+        final String audioId = mQueueRepository.getCurrentMusic().getmSongID();
+        LogHelper.d(LOG_TAG, audioId + " disliked!");
+
+        PlaylistHelper.isAudioInPlaylist(StaticStrings.PlAYLIST_NAME_DISLIKED,
+                audioId,
+                mView.getActivityContext(),
+                new PlaylistHelper.Callback() {
+                    @Override
+                    public void isInPlaylist(boolean result) {
+                        if (result) {
+                            PlaylistHelper.removeAudioFromPlaylist(StaticStrings.PlAYLIST_NAME_DISLIKED, audioId, mView.getActivityContext());
+                            mView.showDisliked(false);
+                        } else {
+                            PlaylistHelper.removeAudioFromPlaylist(StaticStrings.PlAYLIST_NAME_LIKED, audioId, mView.getActivityContext());
+                            PlaylistHelper.insertAudioIntoPlaylist(StaticStrings.PlAYLIST_NAME_DISLIKED, audioId, mView.getActivityContext());
+                            mView.showDisliked(true);
+                        }
+                    }
+                });
 
     }
 
@@ -182,5 +244,12 @@ public class PlayerFragmentPresenter implements PlayerScreenContract.PlayerActio
         if (mBroadcastReceiver != null) {
             LocalBroadcastManager.getInstance(mView.getActivityContext()).unregisterReceiver(mBroadcastReceiver);
         }
+
+        mQueueRepository.removeCurrentItemIndexChangedObserver(this);
+    }
+
+    @Override
+    public void onQueueIndexChanged() {
+        updateViews();
     }
 }

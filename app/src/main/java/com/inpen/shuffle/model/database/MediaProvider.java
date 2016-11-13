@@ -65,7 +65,7 @@ public class MediaProvider extends ContentProvider {
                 MediaContract.PATH_MEDIA,
                 SONGS);
         matcher.addURI(authority,
-                MediaContract.PATH_MEDIA + "/" + MediaContract.PATH_BY_PLAYLIST,
+                MediaContract.PATH_MEDIA + "/" + MediaContract.PATH_BY_PLAYLIST + "/*",
                 SONGS_BY_PLAYLIST);
         matcher.addURI(authority,
                 MediaContract.PATH_PLAYLISTS,
@@ -125,8 +125,8 @@ public class MediaProvider extends ContentProvider {
             case SONGS_BY_PLAYLIST:
                 retCursor = songsJoinPlaylistQueryBuilder.query(mOpenHelper.getReadableDatabase(),
                         projection,
-                        selection,
-                        selectionArgs,
+                        PlaylistsEntry.TABLE_NAME + "." + PlaylistsEntry.COLUMN_PLAYLIST_NAME + "=?",
+                        new String[]{MediaEntry.getPlaylistNameFromUri(uri)},
                         null, null,
                         sortOrder);
                 break;

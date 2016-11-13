@@ -11,7 +11,7 @@
     <dimen name="tab_padding_bottom">16dp</dimen>
     <dimen name="tab_label">14sp</dimen>
     <dimen name="custom_tab_layout_height">72dp</dimen>
-    <dimen name="font_size_player_song_name">35sp</dimen>
+    <dimen name="font_size_player_song_name">24sp</dimen>
     <dimen name="font_size_player_artist_name">12sp</dimen>
     <dimen name="image_button_touch_target_size">48dp</dimen>
     <dimen name="player_actions_bar_padding">10dp</dimen>
@@ -23,4 +23,11 @@
     <dimen name="main_activity_album_art_max_width">100dp</dimen>
     <dimen name="item_detail_height">40dp</dimen>
     <dimen name="grid_item_text_size">12sp</dimen>
+
+
+    <dimen name="font_size_widget_song_name">24sp</dimen>
+    <dimen name="font_size_widget_artist_name">14sp</dimen>
+    <dimen name="song_detail_elevation">5dp</dimen>
+    <dimen name="suggestions_bottom_sheet_peek_height">100dp</dimen>
+    <dimen name="text_margin">16dp</dimen>
 </resources>

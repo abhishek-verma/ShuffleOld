@@ -85,6 +85,21 @@ public class TestMediaProvider {
 
         assertTrue(inserted == cvVector.size());
 
+        //Single insert
+        cv = new ContentValues();
+
+        cv.put(MediaEntry.COLUMN_SONG_ID, "testSongId" + 5);
+        cv.put(MediaEntry.COLUMN_TITLE, "testTitle" + 5);
+        cv.put(MediaEntry.COLUMN_ALBUM, "testAlbum" + 5);
+        cv.put(MediaEntry.COLUMN_ALBUM_KEY, "albumKey" + 5);
+        cv.put(MediaEntry.COLUMN_ARTIST, "testArtist" + 5);
+        cv.put(MediaEntry.COLUMN_ARTIST_KEY, "artistKey" + 5);
+        cv.put(MediaEntry.COLUMN_FOLDER_PATH, "testFolderName" + 5);
+        cv.put(MediaEntry.COLUMN_ALBUM_ART, "testArtUrl/subpath" + 5);
+        cv.put(MediaEntry.COLUMN_DURATION, "98293" + 5);
+        cv.put(MediaEntry.COLUMN_PATH, "testPath/subpath" + 5);
+
+        assertTrue(mContext.getContentResolver().insert(MediaEntry.CONTENT_URI, cv) != null);
 
         //Checking inserts into playlist table
         cvVector.clear();
@@ -107,6 +122,14 @@ public class TestMediaProvider {
         }
 
         assertTrue(inserted == cvVector.size());
+
+        //single insert into playlist table
+        cv = new ContentValues();
+
+        cv.put(PlaylistsEntry.COLUMN_SONG_ID, "testSongId" + 5);
+        cv.put(PlaylistsEntry.COLUMN_PLAYLIST_NAME, "playlistName" + 5);
+
+        assertTrue(mContext.getContentResolver().insert(PlaylistsEntry.CONTENT_URI, cv) != null);
     }
 
     @Test
@@ -139,8 +162,8 @@ public class TestMediaProvider {
                         null,
                         MediaProvider.mSongsSortOrder);
 
-        assertTrue("required size: 4, actual size: " + cursor.getCount(),
-                cursor.getCount() == 4);
+        assertTrue("required size: 5, actual size: " + cursor.getCount(),
+                cursor.getCount() == 5);
 
         int i = 1;
         cursor.moveToFirst();
@@ -184,8 +207,8 @@ public class TestMediaProvider {
                         null,
                         MediaProvider.mPlaylistsOrder);
 
-        assertTrue("required size: 4, actual size: " + cursor.getCount(),
-                cursor.getCount() == 4);
+        assertTrue("required size: 5, actual size: " + cursor.getCount(),
+                cursor.getCount() == 5);
 
         int i = 1;
         cursor.moveToFirst();

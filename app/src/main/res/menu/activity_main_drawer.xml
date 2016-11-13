@@ -1,4 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/navOptionSongs"
+        android:checked="false"
+        android:icon="@drawable/ic_songs"
+        android:title="@string/songs_string" />
+    <item
+        android:id="@+id/navOptionLiked"
+        android:checked="false"
+        android:icon="@drawable/ic_thumb_up"
+        android:title="@string/liked_string" />
+    <item
+        android:id="@+id/navOptionDisliked"
+        android:checked="false"
+        android:icon="@drawable/ic_thumb_down"
+        android:title="@string/disliked_string" />
+
 
 </menu>

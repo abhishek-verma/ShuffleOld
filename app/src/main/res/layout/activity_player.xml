@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/activity_player"
+    android:id="@+id/activityPlayerParent"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.inpen.shuffle.playerscreen.PlayerActivity">
@@ -9,5 +10,16 @@
     <FrameLayout
         android:id="@+id/playerFragmentContainer"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-</RelativeLayout>
+        android:layout_height="match_parent"
+        android:layout_marginBottom="@dimen/suggestions_bottom_sheet_peek_height" />
+
+
+    <FrameLayout
+        android:id="@+id/suggestionsFragmentContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:behavior_hideable="false"
+        app:behavior_peekHeight="@dimen/suggestions_bottom_sheet_peek_height"
+        app:layout_behavior="@string/bottom_sheet_behavior" />
+
+</android.support.design.widget.CoordinatorLayout>

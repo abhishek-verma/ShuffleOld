@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 
 import com.inpen.shuffle.model.QueueRepository;
 import com.inpen.shuffle.model.SelectedItemsRepository;
+import com.inpen.shuffle.playback.MusicService;
 import com.inpen.shuffle.playerscreen.PlayerActivity;
 import com.inpen.shuffle.syncmedia.SyncMediaIntentService;
 import com.inpen.shuffle.utils.CustomTypes;
@@ -77,6 +78,8 @@ public class MainPresenter implements MainScreenContract.ActivityActionsListener
                     public void onPlayingQueueReady(boolean success) {
 
                         if (success) {
+                            context.stopService(new Intent(context, MusicService.class));
+
                             LogHelper.v(LOG_TAG, "onPlayingQueueReady! starting player activity.");
                             //Starting player activity
                             Intent playerActivityIntent = new Intent(context, PlayerActivity.class);

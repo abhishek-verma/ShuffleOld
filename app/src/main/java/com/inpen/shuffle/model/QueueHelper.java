@@ -9,6 +9,7 @@ import com.inpen.shuffle.model.database.MediaContract.PlaylistsEntry;
 import com.inpen.shuffle.model.database.MediaProvider;
 import com.inpen.shuffle.utils.CustomTypes;
 import com.inpen.shuffle.utils.LogHelper;
+import com.inpen.shuffle.utils.StaticStrings;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -48,8 +49,6 @@ public class QueueHelper {
             MediaEntry.TABLE_NAME + "." + MediaEntry.COLUMN_SONG_ID,
             PlaylistsEntry.TABLE_NAME + "." + PlaylistsEntry.COLUMN_PLAYLIST_NAME
     };
-    public static String PlAYLIST_LIKED = "liked";
-    public static String PlAYLIST_DISLIKED = "disliked";
     private static Context mContext;
 
     public QueueHelper(Context context) {
@@ -121,7 +120,7 @@ public class QueueHelper {
                 }
                 case PLAYLIST: {
                     cursor = mContext.getContentResolver()
-                            .query(MediaEntry.buildSongByPlaylistUri(),
+                            .query(PlaylistsEntry.CONTENT_URI,
                                     SONGS_FOR_PLAYLISTS_QUEUE_CURSOR_COLUMNS,
                                     PlaylistsEntry.COLUMN_PLAYLIST_NAME
                                             + " IN ("
@@ -183,11 +182,9 @@ public class QueueHelper {
 
     private List<AudioItem> getLikedSongs() {
         Cursor cursor = mContext.getContentResolver()
-                .query(MediaEntry.buildSongByPlaylistUri(),
+                .query(MediaEntry.buildSongByPlaylistUri(StaticStrings.PlAYLIST_NAME_LIKED),
                         SONGS_QUEUE_CURSOR_COLUMNS,
-                        PlaylistsEntry.COLUMN_PLAYLIST_NAME
-                                + " = ? ",
-                        new String[]{PlAYLIST_LIKED},
+                        null, null,
                         MediaProvider.mSongsSortOrder);
 
         List<AudioItem> audioItemList;
@@ -217,11 +214,9 @@ public class QueueHelper {
 
     private List<AudioItem> getDislikedSongs() {
         Cursor cursor = mContext.getContentResolver()
-                .query(MediaEntry.buildSongByPlaylistUri(),
+                .query(MediaEntry.buildSongByPlaylistUri(StaticStrings.PlAYLIST_NAME_DISLIKED),
                         SONGS_QUEUE_CURSOR_COLUMNS,
-                        PlaylistsEntry.COLUMN_PLAYLIST_NAME
-                                + " = ? ",
-                        new String[]{PlAYLIST_DISLIKED},
+                        null, null,
                         MediaProvider.mSongsSortOrder);
 
         List<AudioItem> audioItemList;

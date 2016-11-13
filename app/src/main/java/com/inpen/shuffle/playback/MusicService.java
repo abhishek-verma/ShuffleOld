@@ -8,6 +8,8 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -19,6 +21,7 @@ import android.support.v4.app.NotificationCompat.Action;
 import android.support.v4.app.TaskStackBuilder;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.NotificationCompat;
+import android.widget.RemoteViews;
 
 import com.inpen.shuffle.R;
 import com.inpen.shuffle.mainscreen.MainActivity;
@@ -26,6 +29,7 @@ import com.inpen.shuffle.model.AudioItem;
 import com.inpen.shuffle.model.QueueRepository;
 import com.inpen.shuffle.playerscreen.PlayerActivity;
 import com.inpen.shuffle.utils.LogHelper;
+import com.inpen.shuffle.widget.PlayerWidgetProvider;
 
 import java.util.concurrent.ExecutionException;
 
@@ -48,11 +52,20 @@ public class MusicService extends Service implements Playback.Callback {
     private QueueRepository mQueueRepository;
     private Playback mPlayback;
 
+    QueueRepository.CurrentItemIndexChangedObserver mQueueIndexChangedObserver =
+            new QueueRepository.CurrentItemIndexChangedObserver() {
+                @Override
+                public void onQueueIndexChanged() {
+                    play();
+                }
+            };
+
     @Override
     public void onCreate() {
         super.onCreate();
         mQueueRepository = QueueRepository.getInstance();
         mQueueRepository.loadQueue(this, null);
+        mQueueRepository.addCurrentItemIndexChangedObserver(mQueueIndexChangedObserver);
 
         mPlayback = new Playback(this);
         mPlayback.setCallback(this);
@@ -70,6 +83,7 @@ public class MusicService extends Service implements Playback.Callback {
     @Override
     public void onDestroy() {
         mPlayback.stop(true);
+        mQueueRepository.removeCurrentItemIndexChangedObserver(mQueueIndexChangedObserver);
         super.onDestroy();
     }
 
@@ -105,6 +119,7 @@ public class MusicService extends Service implements Playback.Callback {
         }
 
         buildNotification();
+        updateWidget(true);
     }
 
     public void pause() {
@@ -125,13 +140,13 @@ public class MusicService extends Service implements Playback.Callback {
 
 
     public void playPrev() {
+        mPlayback.seekTo(0);
         mQueueRepository.skipQueuePosition(-1);
-        play();
     }
 
     public void playNext() {
+        mPlayback.seekTo(0);
         mQueueRepository.skipQueuePosition(+1);
-        play();
     }
 
     public void stop() {
@@ -140,6 +155,8 @@ public class MusicService extends Service implements Playback.Callback {
                         .getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.cancel(1);
         mPlayback.pause();
+        mQueueRepository.clearCachedAudioPlaylist(this);
+        updateWidget(false);
     }
 
     public int getState() {
@@ -247,6 +264,46 @@ public class MusicService extends Service implements Playback.Callback {
         PendingIntent pendingIntent =
                 PendingIntent.getService(getApplicationContext(), NOTIFICATION_ID, intent, 0);
         return new Action.Builder(icon, title, pendingIntent).build();
+    }
+
+    private void updateWidget(boolean showActive) {
+
+        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(getApplicationContext());
+        ComponentName thisWidget = new ComponentName(getApplicationContext(), PlayerWidgetProvider.class);
+        int[] appWidgetIds = appWidgetManager.getAppWidgetIds(thisWidget);
+        RemoteViews remoteViews = new RemoteViews(getPackageName(),
+                R.layout.player_widget);
+
+
+        for (int i = 0; i < appWidgetIds.length; i++) {
+            final int widgetId = appWidgetIds[i];
+
+
+            LogHelper.d(LOG_TAG, "Widget Updating!");
+
+            // Register an onClickListener
+            Intent clickIntent = new Intent(this.getApplicationContext(),
+                    MainActivity.class);
+
+            PendingIntent pendingIntent = PendingIntent.getActivity(
+                    getApplicationContext(), 0, clickIntent,
+                    PendingIntent.FLAG_UPDATE_CURRENT);
+            remoteViews.setOnClickPendingIntent(R.id.widgetParent, pendingIntent);
+
+
+            if (showActive) {
+                //Show launch player view
+                remoteViews.setTextViewText(R.id.widgetSongTitle, mQueueRepository.getCurrentMusic().getmTitle());
+                remoteViews.setTextViewText(R.id.widgetArtistName, mQueueRepository.getCurrentMusic().getmArtist());
+                appWidgetManager.updateAppWidget(widgetId, remoteViews);
+            } else {
+                remoteViews.setTextViewText(R.id.widgetSongTitle, getString(R.string.widget_inactive_string));
+                remoteViews.setTextViewText(R.id.widgetArtistName, "");
+                appWidgetManager.updateAppWidget(widgetId, remoteViews);
+            }
+        }
+
+
     }
 
     ///////////////////////////////////////////////////////////////////////////
