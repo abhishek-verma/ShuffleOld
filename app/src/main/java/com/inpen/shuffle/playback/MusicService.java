@@ -20,6 +20,7 @@ import android.os.IBinder;
 import android.support.v4.app.NotificationCompat.Action;
 import android.support.v4.app.TaskStackBuilder;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.media.session.PlaybackStateCompat;
 import android.support.v7.app.NotificationCompat;
 import android.widget.RemoteViews;
 
@@ -339,6 +340,10 @@ public class MusicService extends Service implements Playback.Callback {
         Intent intent = new Intent(BROADCAST_PLAYBACK_STATE_CHANGED);
         intent.putExtra(BROADCAST_EXTRA_PLAYBACK_STATE_KEY, mPlayback.getState());
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+
+        if (mPlayback.getState() != PlaybackStateCompat.STATE_PLAYING)
+            buildNotification();//For is paused because of ACTION_AUDIO_BECOMING_NOISY
+
     }
 
     @Override

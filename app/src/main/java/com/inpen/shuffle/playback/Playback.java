@@ -76,10 +76,7 @@ public class Playback implements AudioManager.OnAudioFocusChangeListener,
             if (AudioManager.ACTION_AUDIO_BECOMING_NOISY.equals(intent.getAction())) {
                 LogHelper.d(TAG, "Headphones disconnected.");
                 if (isPlaying()) {
-                    Intent i = new Intent(context, MusicServiceUnused.class);
-                    i.setAction(MusicServiceUnused.ACTION_CMD);
-                    i.putExtra(MusicServiceUnused.CMD_NAME, MusicServiceUnused.CMD_PAUSE);
-                    mContext.startService(i);
+                    pause();
                 }
             }
         }
