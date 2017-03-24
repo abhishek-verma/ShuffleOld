@@ -8,6 +8,7 @@ Technologies used:
  - Glide
  - ButterKnife
  - Gson
+ - Event Bus
 
 App requires a google-services.json file
 ----------------------------------------
