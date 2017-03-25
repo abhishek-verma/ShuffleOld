@@ -1,14 +1,21 @@
-Shuffle Player for capstone project.
+    Shuffle Player for capstone project.
 
-Technologies used:
- - Firebase Authentication
- - Firebase Realtime Database
+    Working on new version focused much on a fluid UI and awesome features, currently in progress.
+    github.com/abhishek-verma/Shuffle-2
+    
+- This project is based on MVP Architecture.
 
- Libraries used:
- - Glide
- - ButterKnife
- - Gson
- - Event Bus
+- Technologies used:
+  - Firebase Authentication
+  - Firebase Realtime Database
+  - Content Providers and Loaders
+  - Service
+
+- Libraries used:
+  - Glide
+  - ButterKnife
+  - Gson
+  - Event Bus
 
 App requires a google-services.json file
 ----------------------------------------
