@@ -1,6 +1,6 @@
     Shuffle Player for capstone project.
 
-    Working on new version focused much on a fluid UI and awesome features, currently in progress.
+    Working on new version focused on a cleaner MVP implementation, much more fluid UI and awesome features, currently in progress.
     github.com/abhishek-verma/Shuffle-2
     
 - This project is based on MVP Architecture.
